@@ -9,7 +9,7 @@
 // KONFIGURASI
 // ─────────────────────────────────────────────
 
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://jastcodelab-production.up.railway.app";
 
 
 // ─────────────────────────────────────────────
@@ -64,7 +64,7 @@ async function apiFetch(endpoint, method = "GET", body = null, withAuth = false)
   } catch (err) {
     if (err instanceof TypeError && err.message.includes("fetch")) {
       throw new Error(
-        "Tidak bisa terhubung ke server. Pastikan backend sudah berjalan di " + BASE_URL
+        "Tidak bisa terhubung ke server."
       );
     }
     throw err;
@@ -117,7 +117,7 @@ async function apiFetchOptionalAuth(endpoint, method = "GET", body = null) {
   } catch (err) {
     if (err instanceof TypeError && err.message.includes("fetch")) {
       throw new Error(
-        "Tidak bisa terhubung ke server. Pastikan backend sudah berjalan di " + BASE_URL
+        "Tidak bisa terhubung ke server."
       );
     }
     throw err;

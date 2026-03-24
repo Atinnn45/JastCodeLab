@@ -208,7 +208,7 @@ async function muatShop() {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--red);">
       <div style="font-size:2.5rem;margin-bottom:16px;">💥</div>
       <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Gagal memuat toko</div>
-      <div style="color:var(--txt2);font-size:14px;">Pastikan backend berjalan di http://127.0.0.1:8000</div>
+      <div style="color:var(--txt2);font-size:14px;">Pastikan backend berjalan dan dapat diakses.</div>
     </div>`;
   }
 }
