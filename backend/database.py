@@ -77,8 +77,7 @@ def init_db():
             created_at          DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     """)
-    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS coins        INT          NOT NULL DEFAULT 0")
-    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS active_title VARCHAR(100) DEFAULT NULL")
+
 
     # ── lessons ───────────────────────────────────────────────
     cur.execute("""
@@ -112,7 +111,7 @@ def init_db():
             created_at     DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     """)
-    cur.execute("ALTER TABLE challenges ADD COLUMN IF NOT EXISTS coin_reward INT NOT NULL DEFAULT 0")
+
 
     # ── user_lessons ──────────────────────────────────────────
     cur.execute("""
