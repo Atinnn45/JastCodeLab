@@ -23,7 +23,10 @@ app = FastAPI(title="JastCodeLab API", version="1.0.0", lifespan=lifespan)
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://endearing-marigold-a93f38.netlify.app",
+        "https://fantastic-axolotl-451a8f.netlify.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
