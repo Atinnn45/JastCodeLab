@@ -122,7 +122,7 @@ function _redirectSetelahLogin(data) {
   if (data.is_admin) {
     // Admin → arahkan ke Admin/dashboard.html
     // Dari Frontend/login.html, path relatifnya adalah ../Admin/dashboard.html
-    window.location.href = "../Admin/dashboard.html";
+    window.location.href = "https://fantastic-axolotl-451a8f.netlify.app/dashboard.html";
   } else {
     // User biasa → arahkan ke beranda atau halaman sebelumnya
     const tujuan = sessionStorage.getItem(KEY_REDIRECT) || "index.html";

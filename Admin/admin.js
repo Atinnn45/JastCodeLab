@@ -39,22 +39,21 @@ function requireAdmin() {
   const payload = getAdminPayload();
   if (!payload) {
     alert("Silakan login terlebih dahulu.");
-    window.location.href = "../Frontend/login.html";
+    window.location.href = "/login.html";
     return;
   }
   if (!payload.is_admin) {
     alert("Akses ditolak. Akun ini bukan admin.");
-    window.location.href = "../Frontend/index.html";
+    window.location.href = "/login.html";
   }
 }
 
 function adminLogout() {
   if (confirm("Yakin ingin keluar dari panel admin?")) {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
-    window.location.href = "../Frontend/login.html";
+    window.location.href = "/login.html";
   }
 }
-
 
 // ════════════════════════════════════════
 // API FETCH
@@ -90,7 +89,7 @@ async function adminFetch(endpoint, method = "GET", body = null) {
     if (res.status === 401) {
       localStorage.removeItem(ADMIN_TOKEN_KEY);
       alert("Sesi habis. Silakan login ulang.");
-      window.location.href = "../Frontend/login.html";
+      window.location.href = "/login.html";
       throw new Error("Sesi habis");
     }
 
