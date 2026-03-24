@@ -32,14 +32,17 @@ document.addEventListener("DOMContentLoaded", () => {
   switch (halaman) {
     case "index.html":
     case "":
+    case "index":
       initBeranda();
       break;
 
     case "login.html":
+    case "login":
       initLogin();
       break;
 
     case "register.html":
+    case "register":
       initRegister();
       break;
 
