@@ -4,7 +4,7 @@
  * Muat file ini di setiap halaman admin.
  */
 
-const ADMIN_BASE      = "http://127.0.0.1:8000";
+const ADMIN_BASE      = "https://jastcodelab-production.up.railway.app";
 const ADMIN_TOKEN_KEY = "jcl_token";
 const ADMIN_SB_KEY    = "jcl_admin_sb";
 
