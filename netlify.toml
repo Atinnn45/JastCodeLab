@@ -1,3 +1,5 @@
 [build]
+  base = "Frontend"
   publish = "Frontend"
   command = ""
+
