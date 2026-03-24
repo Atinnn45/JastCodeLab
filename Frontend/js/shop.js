@@ -84,10 +84,7 @@ async function beliItem(id, btn) {
 
   try {
     const token = localStorage.getItem("jcl_token");
-    const res = await fetch(`${API}/shop/beli/${id}`, {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+const res = await apiFetch(`/shop/beli/${id}`, "POST", null, true);
     const data = await res.json();
 
     if (!res.ok) {
@@ -123,10 +120,7 @@ async function pakaiItem(id) {
 
   try {
     const token = localStorage.getItem("jcl_token");
-    const res = await fetch(`${API}/shop/pakai/${id}`, {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+const res = await apiFetch(`/shop/pakai/${id}`, "POST", null, true);
     const data = await res.json();
 
     if (!res.ok) {
@@ -149,10 +143,7 @@ async function lepasTitleAktif() {
 
   try {
     const token = localStorage.getItem("jcl_token");
-    const res = await fetch(`${API}/shop/lepas-title`, {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+const res = await apiFetch('/shop/lepas-title', "POST", null, true);
     const data = await res.json();
 
     if (!res.ok) {
@@ -186,7 +177,7 @@ async function muatShop() {
   try {
     const token = localStorage.getItem("jcl_token");
     const headers = token ? { "Authorization": `Bearer ${token}` } : {};
-    const res = await fetch(`${API}/shop`, { headers });
+const res = await apiFetchOptionalAuth('/shop');
     shopData = await res.json();
 
     updateCoinsDisplay(shopData.coins_user || 0);
@@ -194,9 +185,7 @@ async function muatShop() {
     // Ambil active title
     if (sudahLogin()) {
       try {
-        const kolRes = await fetch(`${API}/shop/koleksi`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
+const kolRes = await apiFetch('/shop/koleksi', "GET", null, true);
         const kol = await kolRes.json();
         activeTitle = kol.active_title || null;
       } catch {}
