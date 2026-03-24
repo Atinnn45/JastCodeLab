@@ -15,21 +15,26 @@ import os
 DB_NAME = os.environ.get("DB_NAME", "jastcodelab")
 
 DB_CONFIG = {
-    "host":        os.environ.get("DB_HOST",     "localhost"),
-    "port":        int(os.environ.get("DB_PORT", "3306")),
-    "user":        os.environ.get("DB_USER",     "root"),
-    "password":    os.environ.get("DB_PASSWORD", ""),
-    "database":    DB_NAME,
-    "charset":     "utf8mb4",
-    "cursorclass": pymysql.cursors.DictCursor,
-    "autocommit":  False,
+    "host":            os.environ.get("DB_HOST",     "localhost"),
+    "port":            int(os.environ.get("DB_PORT", "3306")),
+    "user":            os.environ.get("DB_USER",     "root"),
+    "password":        os.environ.get("DB_PASSWORD", ""),
+    "database":        DB_NAME,
+    "charset":         "utf8mb4",
+    "cursorclass":     pymysql.cursors.DictCursor,
+    "autocommit":      False,
+    "connect_timeout": 10,
 }
 
-_DB_CONFIG_NO_DB = {k: v for k, v in DB_CONFIG.items() if k != "database"}
+_DB_CONFIG_NO_DB = {
+    k: v for k, v in DB_CONFIG.items()
+    if k not in ("database", "cursorclass")
+}
 
 
 def _ensure_database_exists():
     try:
+        print(f">>> Mencoba konek ke MySQL di {DB_CONFIG['host']}:{DB_CONFIG['port']}...")
         conn = pymysql.connect(**_DB_CONFIG_NO_DB)
         cur  = conn.cursor()
         cur.execute(
@@ -201,7 +206,6 @@ def init_db():
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     """)
 
-    # ── cosmetics: UNIQUE pada kolom nama agar tidak bisa duplikat ──
     cur.execute("""
         CREATE TABLE IF NOT EXISTS cosmetics (
             id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -215,14 +219,13 @@ def init_db():
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     """)
 
-    # Jika tabel sudah ada sebelumnya (tanpa UNIQUE), tambahkan constraint-nya
     try:
         cur.execute("""
             ALTER TABLE cosmetics
             ADD UNIQUE KEY uq_cosmetics_nama (nama)
         """)
     except Exception:
-        pass  # Constraint sudah ada, abaikan error
+        pass
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS user_cosmetics (
@@ -335,7 +338,6 @@ def init_db():
     # ════════════════════════════════════════
 
     badges_default = [
-        # Step 1-2
         ("first_challenge", "Tantangan Pertama",   "Selesaikan tantangan pertamamu",            "⚡"),
         ("streak_3",        "3 Hari Berturut",     "Aktif belajar 3 hari berturut-turut",       "🔥"),
         ("streak_7",        "Seminggu Penuh",      "Aktif belajar 7 hari berturut-turut",       "🔥"),
@@ -348,12 +350,9 @@ def init_db():
         ("xp_1000",         "XP 1000",             "Kumpulkan 1000 XP",                         "👑"),
         ("first_post",      "Kontributor",         "Buat postingan pertama di komunitas",       "💬"),
         ("coins_100",       "Kaya Coins",          "Kumpulkan 100 coins",                       "🪙"),
-        # Step 3
         ("first_friend",    "Punya Teman",         "Tambahkan teman pertamamu",                 "🤝"),
-        # Step 4
         ("first_duel_win",  "Duel Pertama",        "Menangkan duel pertamamu",                  "⚔️"),
         ("duel_win_5",      "Duel Master",         "Menangkan 5 duel",                          "🏅"),
-        # Step 5
         ("daily_3",         "Daily 3 Hari",        "Selesaikan daily challenge 3 hari berturut","☀️"),
         ("daily_7",         "Daily 7 Hari",        "Selesaikan daily challenge 7 hari berturut","🌟"),
         ("daily_30",        "Daily 30 Hari",       "Selesaikan daily challenge 30 hari berturut","🔱"),
@@ -366,7 +365,6 @@ def init_db():
 
     # ════════════════════════════════════════
     # SEED — Cosmetics
-    # Hapus duplikat dulu, sisakan id terkecil per nama
     # ════════════════════════════════════════
 
     cur.execute("""
@@ -401,7 +399,6 @@ def init_db():
     # ════════════════════════════════════════
 
     soal_duel = [
-        # ── MUDAH ──
         ("Apa output dari: print(type(42))?",
          "<class 'float'>", "<class 'int'>", "<class 'str'>", "<class 'num'>", "B",
          "42 adalah integer, jadi type() mengembalikan <class 'int'>", "mudah"),
@@ -442,7 +439,6 @@ def init_db():
          "lst[1]", "lst(0)", "lst[0]", "lst.first()", "C",
          "Indexing di Python dimulai dari 0. lst[0] mengakses elemen pertama.", "mudah"),
 
-        # ── MENENGAH ──
         ("Apa output dari: [x**2 for x in range(4)]?",
          "[1, 4, 9, 16]", "[0, 1, 4, 9]", "[0, 1, 2, 3]", "[1, 2, 3, 4]", "B",
          "range(4) menghasilkan 0,1,2,3. Dikuadratkan: 0,1,4,9.", "menengah"),
@@ -487,7 +483,6 @@ def init_db():
          "Mengurutkan list", "Menghapus duplikat", "B",
          "zip([1,2], ['a','b']) menghasilkan [(1,'a'), (2,'b')].", "menengah"),
 
-        # ── SULIT ──
         ("Apa output dari kode berikut?\ndef f(x=[]):\n    x.append(1)\n    return x\nprint(f())\nprint(f())",
          "[1] [1]", "[1] [1, 1]", "[1] [2]", "Error", "B",
          "Default argument list bersifat mutable dan dibuat sekali. Setiap panggilan memodifikasi list yang sama.", "sulit"),
