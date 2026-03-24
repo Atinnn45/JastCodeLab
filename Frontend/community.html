@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Komunitas — JastCodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    :root {
+      --bg:#080c14;--bg2:#0d1220;--bg3:#111827;--bgcard:#111827;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+      --blue:#4f8ef7;--green:#34d399;--orange:#fb923c;--purple:#a78bfa;
+      --red:#f87171;--yellow:#fbbf24;
+      --txt:#e8edf8;--txt2:#8b95b0;--txt3:#4a5472;
+      --fn-display:'Syne',sans-serif;--fn-mono:'JetBrains Mono',monospace;
+      --fn-body:'DM Sans',sans-serif;--t:.18s ease;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--txt);font-family:var(--fn-body);font-size:15px;line-height:1.6;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:none}
+    button{font-family:var(--fn-body)}
+
+    /* ══════════════════════════════════════════
+       SIDEBAR — identik dengan index.html
+    ══════════════════════════════════════════ */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none;backdrop-filter:blur(2px);}
+    .sidebar-overlay.show{display:block;}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+    .sidebar.hidden{transform:translateX(-100%);}
+    .main-area{margin-left:220px;transition:margin .28s cubic-bezier(.4,0,.2,1);}
+    .main-area.full{margin-left:0;}
+
+    .sb-logo{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .sb-logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--fn-mono);font-size:11px;font-weight:700;color:#fff;}
+    .logo-text{font-family:var(--fn-display);font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-.3px;}
+    .close-btn{background:none;border:none;cursor:pointer;color:var(--txt3);padding:4px;border-radius:5px;display:none;}
+    .close-btn:hover{color:var(--txt);background:rgba(255,255,255,.07);}
+
+    .sb-nav{flex:1;padding:10px;overflow-y:auto;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--txt2);transition:all .15s;text-decoration:none;margin-bottom:2px;border:1px solid transparent;}
+    .nav-item:hover{background:rgba(255,255,255,.05);color:var(--txt);}
+    .nav-item.active{background:rgba(79,142,247,.12);color:var(--blue);border-color:rgba(79,142,247,.25);}
+    .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+    .nav-divider{height:1px;background:var(--border);margin:6px 4px;}
+
+    .sb-bottom{padding:10px;border-top:1px solid var(--border);flex-shrink:0;}
+    .streak-wrap{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);margin-bottom:6px;}
+    .streak-days{font-family:var(--fn-display);font-size:14px;font-weight:800;color:var(--orange);line-height:1;}
+    .streak-lbl{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);}
+    .sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:6px;}
+    .sb-user:hover{background:rgba(255,255,255,.05);}
+    .avatar-sm{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+    .sb-username{font-size:13px;font-weight:500;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .btn-danger-sm{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%;transition:all .15s;}
+    .btn-danger-sm:hover{background:rgba(248,113,113,.22);}
+
+    /* ── TOPBAR ── */
+    .topbar{position:sticky;top:0;height:54px;background:rgba(8,12,20,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;}
+    .topbar-title{font-size:14px;color:var(--txt2);flex:1;}
+    .topbar-right{display:flex;align-items:center;gap:10px;}
+    .xp-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2);}
+    .coins-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+    .menu-toggle{background:none;border:none;cursor:pointer;color:var(--txt2);padding:6px;border-radius:7px;display:flex;align-items:center;transition:all var(--t);}
+    .menu-toggle:hover{background:rgba(255,255,255,.07);color:var(--txt);}
+
+    /* ── COMMUNITY ── */
+    .card{background:var(--bgcard);border:1px solid var(--border);border-radius:14px;padding:20px;}
+    .form-group{margin-bottom:12px;}
+    .form-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--txt);font-size:13px;outline:none;transition:border-color var(--t);}
+    .form-input:focus{border-color:var(--blue);}
+    .form-input::placeholder{color:var(--txt3);}
+    .btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:8px;font-size:13px;font-weight:600;padding:8px 18px;cursor:pointer;transition:all .2s;}
+    .btn-primary{background:var(--blue);color:#fff;}
+    .btn-primary:hover{background:#3a7de8;}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+    .btn-outline{background:transparent;color:var(--txt2);border:1px solid var(--border2);}
+    .btn-outline:hover{color:var(--txt);border-color:rgba(255,255,255,.25);}
+    .btn-sm{padding:6px 14px !important;font-size:12px !important;}
+    .pill{display:inline-block;font-family:var(--fn-mono);font-size:9px;text-transform:uppercase;letter-spacing:.8px;padding:3px 9px;border-radius:100px;}
+    .pill-blue{background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.25);}
+    .pill-green{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2);}
+    .pill-orange{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2);}
+    .pill-yellow{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+    .blok-kode{background:#0d1220;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .blok-kode-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);font-family:var(--fn-mono);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;}
+    .blok-output{padding:10px 14px;background:rgba(0,0,0,.3);border-top:1px solid var(--border);}
+    .out-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:4px;font-weight:600;display:block;font-family:var(--fn-mono);}
+    .skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+    @keyframes shimmer{to{background-position:-200% 0}}
+    #toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+    @keyframes fadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+    /* Leaderboard */
+    .lb-item{display:flex;align-items:center;gap:8px;padding:9px 6px;border-radius:9px;border-bottom:1px solid var(--border);transition:background var(--t);}
+    .lb-item:last-child{border-bottom:none;}
+    .lb-item:hover{background:rgba(255,255,255,.03);}
+    .lb-item.saya{background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);border-radius:9px;}
+    .gelar-badge{display:inline-flex;align-items:center;gap:3px;font-family:var(--fn-mono);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;white-space:nowrap;letter-spacing:.3px;}
+    .gelar-Beginner{background:rgba(139,149,176,.1);color:#8b95b0;border:1px solid rgba(139,149,176,.2);}
+    .gelar-Intermediate{background:rgba(79,142,247,.1);color:var(--blue);border:1px solid rgba(79,142,247,.2);}
+    .gelar-Advanced{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2);}
+    .gelar-Expert{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2);}
+    .gelar-master{background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2);}
+    .gelar-legenda{background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.3);}
+
+    @media(max-width:768px){
+      .main-area{margin-left:0!important;}
+      .sidebar{transform:translateX(-100%);}
+      .sidebar.show{transform:translateX(0);}
+      .close-btn{display:flex!important;}
+      .aside-kanan{display:none!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="tutupSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR — identik dengan index.html ═══════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html" class="sb-logo-link">
+      <div class="logo-icon">&lt;/&gt;</div>
+      <span class="logo-text">JCL</span>
+    </a>
+    <button class="close-btn" id="closeSidebarBtn" onclick="tutupSidebar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <ul class="sb-nav">
+    <!-- Navigasi Utama -->
+    <li><a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Beranda
+    </a></li>
+    <li><a href="learn.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      Belajar
+    </a></li>
+    <li><a href="daily.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      Daily Challenge
+    </a></li>
+    <li><a href="runner.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Kode Runner
+    </a></li>
+    <li><a href="challenges.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Tantangan
+    </a></li>
+    <li><a href="community.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Komunitas
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Sosial & Toko -->
+    <li><a href="friends.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Teman
+    </a></li>
+    <li><a href="shop.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Shop
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Akun -->
+    <li id="navLoginLi"><a href="login.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Masuk
+    </a></li>
+    <li id="navProfilLi" style="display:none;"><a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profil Saya
+    </a></li>
+  </ul>
+
+  <div class="sb-bottom">
+    <div class="streak-wrap" id="streakWrap" style="display:none;">
+      <span style="font-size:18px;">🔥</span>
+      <div>
+        <div class="streak-days" id="navStreak">0 Hari</div>
+        <div class="streak-lbl">Streak Aktif</div>
+      </div>
+    </div>
+    <div class="sb-user" onclick="window.location.href='profile.html'">
+      <div class="avatar-sm" id="navAvatar">?</div>
+      <span class="sb-username" id="navUsername">Guest</span>
+    </div>
+    <button class="btn-danger-sm" id="navLogoutBtn" style="display:none;" onclick="logout()">Keluar</button>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main-area" id="mainArea">
+  <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="topbar-title">Komunitas</div>
+    <div class="topbar-right">
+      <span class="coins-badge" id="navCoins" style="display:none;">🪙 0</span>
+      <span class="xp-badge" id="navXP">⚡ 0 XP</span>
+      <div class="avatar-sm" id="topbarAvatar" style="cursor:pointer;width:32px;height:32px;font-size:13px;" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </header>
+
+  <div style="display:flex;">
+
+    <!-- FEED UTAMA -->
+    <div style="flex:1;padding:24px 28px;min-width:0;">
+
+      <!-- COMPOSE BOX -->
+      <div id="composeArea" style="display:none;margin-bottom:20px;">
+        <div class="card">
+          <div id="composeTrigger" onclick="toggleCompose()"
+            style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+            <div class="avatar-sm" id="composeAvatar">?</div>
+            <span style="color:var(--txt3);font-size:14px;">Bagikan kode atau pengalaman belajarmu...</span>
+          </div>
+          <div id="composeForm" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+            <div class="form-group">
+              <input class="form-input" id="postJudul" placeholder="Judul postingan..."/>
+            </div>
+            <div class="form-group">
+              <textarea class="form-input" id="postKonten" rows="3"
+                placeholder="Ceritakan lebih detail..." style="resize:vertical;"></textarea>
+            </div>
+            <div class="form-group">
+              <textarea class="form-input" id="postKode" rows="4"
+                placeholder="# Kode Python (opsional)" style="resize:vertical;font-family:var(--fn-mono);font-size:12px;"></textarea>
+            </div>
+            <div class="form-group">
+              <input class="form-input" id="postOutput" placeholder="Output kode (opsional)"/>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+              <button class="btn btn-outline btn-sm" onclick="toggleCompose()">Batal</button>
+              <button class="btn btn-primary btn-sm" id="btnKirimPost" onclick="kirimPost()">Posting</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DAFTAR POST -->
+      <div id="feedPost">
+        <div class="skel" style="height:160px;border-radius:14px;margin-bottom:14px;"></div>
+        <div class="skel" style="height:160px;border-radius:14px;margin-bottom:14px;"></div>
+        <div class="skel" style="height:160px;border-radius:14px;"></div>
+      </div>
+
+      <!-- Muat lebih -->
+      <div id="muatLebihWrap" style="text-align:center;margin-top:16px;display:none;">
+        <button class="btn btn-outline" onclick="muatPostLebih()">Muat Lebih Banyak</button>
+      </div>
+    </div>
+
+    <!-- SIDEBAR KANAN -->
+    <aside class="aside-kanan" style="width:260px;flex-shrink:0;border-left:1px solid var(--border);padding:24px 18px;">
+      <div style="margin-bottom:22px;">
+        <div style="font-family:var(--fn-mono);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:10px;">🔥 Topik Trending</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="pill pill-blue" style="cursor:pointer;font-size:10px;">#list-comprehension</span>
+          <span class="pill pill-green" style="cursor:pointer;font-size:10px;">#oop-kelas</span>
+          <span class="pill pill-orange" style="cursor:pointer;font-size:10px;">#tips-python</span>
+          <span class="pill pill-yellow" style="cursor:pointer;font-size:10px;">#debugging</span>
+          <span class="pill pill-blue" style="cursor:pointer;font-size:10px;">#fungsi-lambda</span>
+          <span class="pill pill-green" style="cursor:pointer;font-size:10px;">#project-pertama</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--fn-mono);font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:10px;">🏆 Papan Peringkat</div>
+        <div id="lbKomunitasList">
+          <div class="skel" style="height:52px;margin-bottom:7px;border-radius:8px;"></div>
+          <div class="skel" style="height:52px;margin-bottom:7px;border-radius:8px;"></div>
+          <div class="skel" style="height:52px;border-radius:8px;"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+
+/* ════════════════════════════════════════
+   SIDEBAR — identik dengan index.html
+════════════════════════════════════════ */
+let sidebarOpen = true;
+
+function toggleSidebar() {
+  if (window.innerWidth > 768) return;
+  sidebarOpen = !sidebarOpen;
+  applySidebar();
+}
+
+function tutupSidebar() {
+  if (window.innerWidth > 768) return;
+  sidebarOpen = false;
+  applySidebar();
+}
+
+function applySidebar() {
+  const sb  = document.getElementById("sidebar");
+  const ma  = document.getElementById("mainArea");
+  const ov  = document.getElementById("overlay");
+  const mob = window.innerWidth <= 768;
+
+  if (!mob) {
+    sb.classList.remove("hidden");
+    sb.classList.add("show");
+    ov.classList.remove("show");
+    ma.classList.remove("full");
+    ma.style.marginLeft = "220px";
+    document.getElementById("closeSidebarBtn").style.display = "none";
+  } else {
+    document.getElementById("closeSidebarBtn").style.display = "flex";
+    if (sidebarOpen) {
+      sb.classList.remove("hidden"); sb.classList.add("show");
+      ov.classList.add("show");
+      ma.classList.add("full");
+    } else {
+      sb.classList.add("hidden"); sb.classList.remove("show");
+      ov.classList.remove("show");
+      ma.classList.remove("full");
+    }
+  }
+}
+
+window.addEventListener("resize", () => {
+  sidebarOpen = window.innerWidth > 768;
+  applySidebar();
+});
+
+/* ════════════════════════════════════════
+   UPDATE NAV USER — identik dengan index.html
+════════════════════════════════════════ */
+function updateNavUser() {
+  const user     = getUser();
+  const loggedIn = sudahLogin();
+
+  document.getElementById("navLoginLi").style.display   = loggedIn ? "none" : "";
+  document.getElementById("navProfilLi").style.display  = loggedIn ? "" : "none";
+  document.getElementById("navLogoutBtn").style.display = loggedIn ? "" : "none";
+
+  if (!user) return;
+
+  document.getElementById("navUsername").textContent = user.username;
+  document.getElementById("navStreak").textContent   = `${user.streak_days ?? 0} Hari`;
+  document.getElementById("navXP").textContent       = `⚡ ${user.xp ?? 0} XP`;
+
+  const navCoins = document.getElementById("navCoins");
+  if (navCoins) {
+    navCoins.textContent   = `🪙 ${user.coins ?? 0}`;
+    navCoins.style.display = loggedIn ? "" : "none";
+  }
+
+  const streakWrap = document.getElementById("streakWrap");
+  if (streakWrap) streakWrap.style.display = (user.streak_days > 0) ? "flex" : "none";
+
+  const inisial = user.username.charAt(0).toUpperCase();
+  document.getElementById("navAvatar").textContent    = inisial;
+  document.getElementById("topbarAvatar").textContent = inisial;
+}
+
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+function escHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function formatTanggal(iso) {
+  if (!iso) return "-";
+  try {
+    return new Date(iso.replace(" ","T")).toLocaleDateString("id-ID", {
+      day:"numeric", month:"short", year:"numeric"
+    });
+  } catch { return iso; }
+}
+
+function tampilToast(pesan, tipe = "info", durasi = 3500) {
+  const c  = document.getElementById("toastContainer");
+  const el = document.createElement("div");
+  const w  = tipe === "success" ? "#34d399" : tipe === "error" ? "#f87171" : "#4f8ef7";
+  el.style.cssText = `background:#111827;border:1px solid ${w}33;border-left:3px solid ${w};color:${w};padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,.4);animation:fadeIn .2s ease;`;
+  el.textContent = pesan;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity="0"; el.style.transition="opacity .3s"; setTimeout(()=>el.remove(),300); }, durasi);
+}
+
+function salinKode(btn) {
+  const pre = btn.closest(".blok-kode").querySelector("pre");
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = "✓ Disalin!"; btn.style.color = "var(--green)";
+    setTimeout(() => { btn.textContent = "Salin"; btn.style.color = ""; }, 2000);
+  });
+}
+
+function warnaDariNama(str) {
+  const palet = [
+    "linear-gradient(135deg,#6366f1,#8b5cf6)",
+    "linear-gradient(135deg,#10b981,#059669)",
+    "linear-gradient(135deg,#f59e0b,#d97706)",
+    "linear-gradient(135deg,#3b82f6,#2563eb)",
+    "linear-gradient(135deg,#ec4899,#db2777)",
+  ];
+  let hash = 0;
+  for (const c of str) hash = (hash * 31 + c.charCodeAt(0)) % palet.length;
+  return palet[hash];
+}
+
+/* ════════════════════════════════════════
+   LEVEL & GELAR
+════════════════════════════════════════ */
+const LEVEL_XP = [0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200, 4000];
+
+function hitungLevel(xp) {
+  let level = 1;
+  for (let i = 0; i < LEVEL_XP.length; i++) {
+    if (xp >= LEVEL_XP[i]) level = i + 1; else break;
+  }
+  return level;
+}
+
+function infoGelar(xp) {
+  const lv = hitungLevel(xp);
+  if (lv >= 10) return { ikon:"👑", gelar:"Legenda",      cls:"gelar-legenda"      };
+  if (lv >= 8)  return { ikon:"💎", gelar:"Master",       cls:"gelar-master"       };
+  if (lv >= 6)  return { ikon:"🔥", gelar:"Expert",       cls:"gelar-Expert"       };
+  if (lv >= 4)  return { ikon:"⚡", gelar:"Advanced",     cls:"gelar-Advanced"     };
+  if (lv >= 2)  return { ikon:"📖", gelar:"Intermediate", cls:"gelar-Intermediate" };
+  return               { ikon:"🌱", gelar:"Beginner",     cls:"gelar-Beginner"     };
+}
+
+/* ════════════════════════════════════════
+   COMPOSE
+════════════════════════════════════════ */
+let composeOpen = false;
+
+function toggleCompose() {
+  composeOpen = !composeOpen;
+  document.getElementById("composeForm").style.display = composeOpen ? "block" : "none";
+}
+
+async function kirimPost() {
+  const judul  = document.getElementById("postJudul").value.trim();
+  const konten = document.getElementById("postKonten").value.trim();
+  const kode   = document.getElementById("postKode").value.trim();
+  const output = document.getElementById("postOutput").value.trim();
+  const btn    = document.getElementById("btnKirimPost");
+
+  if (!judul)  { tampilToast("Judul wajib diisi!", "error"); return; }
+  if (!konten) { tampilToast("Konten wajib diisi!", "error"); return; }
+
+  btn.disabled = true; btn.textContent = "Memposting...";
+
+  try {
+    await ApiPost.buat(judul, konten, kode, output);
+    tampilToast("Post berhasil dibuat! +5 XP 🎉", "success");
+    ["postJudul","postKonten","postKode","postOutput"].forEach(id => {
+      document.getElementById(id).value = "";
+    });
+    toggleCompose();
+    await muatPost(true);
+  } catch (e) { tampilToast(e.message, "error"); }
+
+  btn.disabled = false; btn.textContent = "Posting";
+}
+
+/* ════════════════════════════════════════
+   MUAT POST
+════════════════════════════════════════ */
+let halamanPost = 1;
+let adaPostLagi = false;
+
+async function muatPost(reset = false) {
+  if (reset) halamanPost = 1;
+  try {
+    const result = await ApiPost.getDaftar(halamanPost);
+    const feed   = document.getElementById("feedPost");
+    const user   = getUser();
+
+    if (result.posts.length === 0 && halamanPost === 1) {
+      feed.innerHTML = `
+        <div style="text-align:center;padding:48px 20px;color:var(--txt3);">
+          <div style="font-size:36px;margin-bottom:12px;">💬</div>
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Belum ada postingan</div>
+          <div style="font-size:13px;">Jadilah yang pertama berbagi pengalaman belajar!</div>
+        </div>`;
+      return;
+    }
+
+    const html = result.posts.map(p => renderPost(p, user)).join("");
+    if (reset) feed.innerHTML = html;
+    else       feed.insertAdjacentHTML("beforeend", html);
+
+    adaPostLagi = halamanPost * result.per_halaman < result.total;
+    document.getElementById("muatLebihWrap").style.display = adaPostLagi ? "block" : "none";
+    halamanPost++;
+
+  } catch (e) {
+    document.getElementById("feedPost").innerHTML =
+      `<p style="text-align:center;padding:24px;color:var(--red);">Gagal memuat post: ${escHtml(e.message)}</p>`;
+  }
+}
+
+async function muatPostLebih() { await muatPost(false); }
+
+/* ════════════════════════════════════════
+   RENDER POST
+════════════════════════════════════════ */
+function renderPost(p, user) {
+  const inisial    = p.penulis.charAt(0).toUpperCase();
+  const gradAvatar = warnaDariNama(p.penulis);
+  const sudahLike  = p.sudah_dilike;
+  const waktu      = formatTanggal(p.created_at);
+
+  return `
+    <div style="background:var(--bgcard);border:1px solid var(--border);border-radius:14px;
+      padding:20px;margin-bottom:14px;transition:border-color .2s;"
+      onmouseover="this.style.borderColor='var(--border2)'"
+      onmouseout="this.style.borderColor='var(--border)'">
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="width:34px;height:34px;border-radius:50%;background:${gradAvatar};
+          display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;">
+          ${inisial}
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;">${escHtml(p.penulis)}</div>
+          <div style="font-size:11px;color:var(--txt3);font-family:var(--fn-mono);">${waktu}</div>
+        </div>
+      </div>
+
+      <div style="font-family:var(--fn-display);font-size:16px;font-weight:700;margin-bottom:7px;letter-spacing:-.3px;">
+        ${escHtml(p.judul)}
+      </div>
+      <div style="font-size:13.5px;color:var(--txt2);line-height:1.7;margin-bottom:${p.kode_snippet ? "12px" : "0"};">
+        ${escHtml(p.konten)}
+      </div>
+
+      ${p.kode_snippet ? `
+        <div class="blok-kode" style="margin-bottom:12px;">
+          <div class="blok-kode-hdr">
+            <span>Python</span>
+            <button onclick="salinKode(this)" style="background:none;border:1px solid var(--border);color:var(--txt3);
+              font-family:var(--fn-mono);font-size:10px;padding:2px 8px;border-radius:4px;cursor:pointer;">Salin</button>
+          </div>
+          <pre style="padding:14px;font-size:12px;overflow-x:auto;font-family:var(--fn-mono);">${escHtml(p.kode_snippet)}</pre>
+          ${p.output_preview ? `
+            <div class="blok-output">
+              <span class="out-label">▶ Output</span>
+              <pre style="font-family:var(--fn-mono);font-size:12px;color:var(--txt2);">${escHtml(p.output_preview)}</pre>
+            </div>` : ""}
+        </div>` : ""}
+
+      <div style="display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--border);">
+        <button id="like-btn-${p.id}" onclick="toggleLike(${p.id})"
+          style="display:flex;align-items:center;gap:5px;font-size:12px;
+            color:${sudahLike ? "var(--blue)" : "var(--txt3)"};
+            background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s;"
+          onmouseover="this.style.background='rgba(255,255,255,.05)'"
+          onmouseout="this.style.background='none'">
+          <svg width="13" height="13" viewBox="0 0 24 24"
+            fill="${sudahLike ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2">
+            <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/>
+            <path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/>
+          </svg>
+          <span id="like-count-${p.id}">${p.jumlah_like}</span> Suka
+        </button>
+
+        <button onclick="toggleKomentar(${p.id})"
+          style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt3);
+            background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s;"
+          onmouseover="this.style.background='rgba(255,255,255,.05)'"
+          onmouseout="this.style.background='none'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+          <span id="komentar-count-${p.id}">${p.jumlah_komentar}</span> Komentar
+        </button>
+      </div>
+
+      <div id="komentar-section-${p.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <div id="komentar-list-${p.id}"></div>
+        ${sudahLogin() ? `
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <input id="komentar-input-${p.id}" class="form-input"
+              style="font-size:13px;padding:8px 12px;" placeholder="Tulis komentar..."
+              onkeydown="if(event.key==='Enter'){kirimKomentar(${p.id})}"/>
+            <button class="btn btn-primary btn-sm" onclick="kirimKomentar(${p.id})">Kirim</button>
+          </div>` :
+          `<p style="font-size:12px;color:var(--txt3);">
+            <a href="login.html" style="color:var(--blue);">Login</a> untuk berkomentar.
+          </p>`
+        }
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════
+   LIKE
+════════════════════════════════════════ */
+async function toggleLike(postId) {
+  if (!sudahLogin()) { tampilToast("Silakan login untuk memberi suka.", "info"); return; }
+  try {
+    const hasil = await ApiPost.toggleLike(postId);
+    const btn   = document.getElementById("like-btn-" + postId);
+    const count = document.getElementById("like-count-" + postId);
+    if (count) count.textContent = hasil.jumlah_like;
+    const liked = hasil.aksi === "like";
+    if (btn) {
+      btn.style.color = liked ? "var(--blue)" : "var(--txt3)";
+      const svg = btn.querySelector("svg");
+      if (svg) svg.setAttribute("fill", liked ? "currentColor" : "none");
+    }
+  } catch (e) { tampilToast(e.message, "error"); }
+}
+
+/* ════════════════════════════════════════
+   KOMENTAR
+════════════════════════════════════════ */
+async function toggleKomentar(postId) {
+  const section = document.getElementById("komentar-section-" + postId);
+  const buka    = section.style.display === "none";
+  section.style.display = buka ? "block" : "none";
+  if (buka) await muatKomentar(postId);
+}
+
+async function muatKomentar(postId) {
+  const listEl = document.getElementById("komentar-list-" + postId);
+  listEl.innerHTML = `<div class="skel" style="height:40px;border-radius:6px;margin-bottom:6px;"></div>`;
+  try {
+    const post = await ApiPost.getDetail(postId);
+    if (!post.komentar || post.komentar.length === 0) {
+      listEl.innerHTML = `<p style="font-size:12px;color:var(--txt3);margin-bottom:8px;">Belum ada komentar.</p>`;
+      return;
+    }
+    listEl.innerHTML = post.komentar.map(k => `
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:${warnaDariNama(k.penulis)};
+          display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">
+          ${k.penulis.charAt(0).toUpperCase()}
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;flex:1;">
+          <div style="font-size:11px;margin-bottom:3px;">
+            <span style="font-weight:600;">${escHtml(k.penulis)}</span>
+            <span style="color:var(--txt3);font-family:var(--fn-mono);margin-left:6px;">${formatTanggal(k.created_at)}</span>
+          </div>
+          <div style="font-size:13px;color:var(--txt2);">${escHtml(k.isi)}</div>
+        </div>
+      </div>`
+    ).join("");
+  } catch (e) {
+    listEl.innerHTML = `<p style="color:var(--red);font-size:12px;">Gagal memuat komentar.</p>`;
+  }
+}
+
+async function kirimKomentar(postId) {
+  const input = document.getElementById("komentar-input-" + postId);
+  const isi   = input.value.trim();
+  if (!isi) return;
+  try {
+    await ApiPost.tambahKomentar(postId, isi);
+    input.value = "";
+    const countEl = document.getElementById("komentar-count-" + postId);
+    if (countEl) countEl.textContent = parseInt(countEl.textContent || "0") + 1;
+    await muatKomentar(postId);
+    tampilToast("Komentar berhasil ditambahkan!", "success");
+  } catch (e) { tampilToast(e.message, "error"); }
+}
+
+/* ════════════════════════════════════════
+   LEADERBOARD
+════════════════════════════════════════ */
+async function muatLbKomunitas() {
+  const el = document.getElementById("lbKomunitasList");
+  try {
+    const data     = await ApiUser.getLeaderboard();
+    const userSaya = getUser();
+
+    el.innerHTML = data.slice(0, 5).map((u, i) => {
+      const medali = i===0 ? "🥇" : i===1 ? "🥈" : i===2 ? "🥉" : `#${i+1}`;
+      const info   = infoGelar(u.xp ?? 0);
+      const lv     = hitungLevel(u.xp ?? 0);
+      const isMe   = userSaya && u.username === userSaya.username;
+      const warna  = warnaDariNama(u.username);
+
+      return `
+        <div class="lb-item ${isMe ? "saya" : ""}">
+          <span style="font-size:${i<3?"15":"12"}px;width:22px;flex-shrink:0;text-align:center;
+            font-family:var(--fn-mono);font-weight:700;
+            color:${i===0?"#fbbf24":i===1?"#8b95b0":i===2?"#fb923c":"var(--txt3)"};">
+            ${medali}
+          </span>
+          <div style="width:30px;height:30px;border-radius:50%;background:${warna};
+            display:flex;align-items:center;justify-content:center;
+            font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">
+            ${u.username.charAt(0).toUpperCase()}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;">
+              ${escHtml(u.username)}
+              ${isMe ? '<span style="color:var(--blue);font-size:10px;"> (kamu)</span>' : ""}
+            </div>
+            <span class="gelar-badge ${info.cls}">${info.ikon} ${info.gelar} · Lv.${lv}</span>
+          </div>
+        </div>`;
+    }).join("");
+
+  } catch (_) {
+    el.innerHTML = `<p style="color:var(--txt3);font-size:12px;padding:8px 0;">Gagal memuat.</p>`;
+  }
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", async () => {
+  sidebarOpen = window.innerWidth > 768;
+  applySidebar();
+
+  updateNavUser();
+
+  if (sudahLogin()) {
+    try {
+      const profil = await ApiUser.getProfil();
+      if (typeof updateUserStats === "function") updateUserStats(profil.xp, profil.streak_days);
+      updateNavUser();
+    } catch(_) {}
+  }
+
+  const user = getUser();
+  if (user) {
+    const area   = document.getElementById("composeArea");
+    const avatar = document.getElementById("composeAvatar");
+    area.style.display = "block";
+    if (avatar) avatar.textContent = user.username.charAt(0).toUpperCase();
+  }
+
+  await muatPost(true);
+  await muatLbKomunitas();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Code Runner — JastCodeLab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+  <style>
+    :root{--bg:#080c14;--bg2:#0d1220;--bg3:#111827;--bgcard:#111827;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--blue:#4f8ef7;--green:#34d399;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--yellow:#fbbf24;--txt:#e8edf8;--txt2:#8b95b0;--txt3:#4a5472;--fn-display:'Inter',sans-serif;--fn-mono:'Roboto Mono',monospace;--fn-body:'Inter',sans-serif;--t:.18s ease;--sb-w:220px;--tb-h:50px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;}
+    body{background:var(--bg);color:var(--txt);font-family:var(--fn-body);font-size:14px;line-height:1.6;}
+    a{text-decoration:none;color:inherit;}ul{list-style:none;}button{font-family:var(--fn-body);cursor:pointer;}
+
+    .app-layout{display:flex;height:100vh;overflow:hidden;}
+
+    /* SIDEBAR */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none;backdrop-filter:blur(2px);}
+    .sidebar-overlay.show{display:block;}
+    .sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+    .sidebar.hidden{transform:translateX(-100%);}
+    .sb-logo{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .sb-logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--fn-mono);font-size:11px;font-weight:700;color:#fff;}
+    .logo-text{font-family:var(--fn-display);font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-.3px;}
+    .close-btn{background:none;border:none;cursor:pointer;color:var(--txt3);padding:4px;border-radius:5px;display:none;align-items:center;justify-content:center;}
+    .close-btn:hover{color:var(--txt);background:rgba(255,255,255,.07);}
+    .sb-nav{flex:1;padding:10px;overflow-y:auto;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--txt2);transition:all var(--t);margin-bottom:2px;border:1px solid transparent;text-decoration:none;}
+    .nav-item:hover{background:rgba(255,255,255,.05);color:var(--txt);}
+    .nav-item.active{background:rgba(79,142,247,.12);color:var(--blue);border-color:rgba(79,142,247,.25);}
+    .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+    .nav-divider{height:1px;background:var(--border);margin:6px 4px;}
+    .sb-bottom{padding:10px;border-top:1px solid var(--border);flex-shrink:0;}
+    .streak-wrap{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);margin-bottom:6px;}
+    .streak-days{font-family:var(--fn-display);font-size:14px;font-weight:800;color:var(--orange);line-height:1;}
+    .streak-lbl{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);}
+    .sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background var(--t);margin-bottom:6px;}
+    .sb-user:hover{background:rgba(255,255,255,.05);}
+    .avatar-sm{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+    .sb-username{font-size:13px;font-weight:500;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .btn-danger-sm{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%;transition:all .15s;}
+    .btn-danger-sm:hover{background:rgba(248,113,113,.22);}
+
+    /* MAIN */
+    .main-area{flex:1;margin-left:220px;display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:margin .28s cubic-bezier(.4,0,.2,1);}
+    .main-area.full{margin-left:0;}
+
+    /* TOPBAR */
+    .topbar{height:var(--tb-h);background:rgba(8,12,20,.95);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:100;}
+    .menu-toggle{background:none;border:none;color:var(--txt2);padding:6px;border-radius:7px;display:flex;align-items:center;transition:background var(--t),color var(--t);}
+    .menu-toggle:hover{background:rgba(255,255,255,.07);color:var(--txt);}
+    .topbar-title{font-family:var(--fn-display);font-size:14px;font-weight:700;letter-spacing:-.3px;flex:1;}
+    .topbar-right{display:flex;align-items:center;gap:10px;}
+    .xp-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2);}
+    .coins-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+
+    /* RUNNER */
+    .runner-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .runner-toolbar{height:46px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;overflow-x:auto;}
+    .runner-toolbar::-webkit-scrollbar{display:none;}
+    .statusbar-text{font-family:var(--fn-mono);font-size:11px;color:var(--txt3);white-space:nowrap;}
+    .sample-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;color:var(--txt2);font-size:11px;padding:5px 12px;white-space:nowrap;transition:all var(--t);font-family:var(--fn-mono);}
+    .sample-btn:hover{background:rgba(255,255,255,.1);color:var(--txt);border-color:var(--border2);}
+    .btn-run{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#0a0e1a;border:none;border-radius:7px;font-size:12px;font-weight:700;padding:7px 16px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .btn-run:hover{background:#2fd18a;transform:translateY(-1px);}
+    .btn-run:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+    .btn-clear{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);color:var(--txt2);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;padding:7px 14px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .btn-clear:hover{background:rgba(255,255,255,.1);color:var(--txt);}
+    kbd{display:inline-block;font-family:var(--fn-mono);font-size:9px;padding:1px 5px;border-radius:4px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:var(--txt3);vertical-align:middle;}
+    .spinner{display:inline-block;width:11px;height:11px;border:2px solid rgba(0,0,0,.25);border-top-color:#0a0e1a;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .runner-panes{flex:1;display:flex;overflow:hidden;}
+    .pane-editor{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);min-width:0;}
+    #monacoContainer{flex:1;overflow:hidden;min-height:0;}
+    .pane-output{width:440px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+    .pane-header{height:36px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px;font-family:var(--fn-mono);font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;flex-shrink:0;}
+    .pane-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+    .pane-dot-green{background:var(--green);}
+
+    #outputKode{flex:1;overflow-y:auto;padding:14px 16px;font-family:var(--fn-mono);font-size:12.5px;line-height:1.75;background:var(--bg);word-break:break-all;}
+    #outputKode::-webkit-scrollbar{width:5px;}
+    #outputKode::-webkit-scrollbar-track{background:transparent;}
+    #outputKode::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px;}
+    .out-line{display:flex;gap:10px;padding:1px 0;}
+    .out-prefix{color:var(--txt3);font-size:10px;flex-shrink:0;padding-top:2px;user-select:none;width:12px;}
+    .out-text{color:var(--txt2);flex:1;word-break:break-word;}
+    .out-err .out-prefix{color:var(--red);}
+    .out-err .out-text{color:#fca5a5;}
+    .out-dim .out-prefix,.out-dim .out-text{color:var(--txt3);font-style:italic;}
+    .out-separator{height:1px;background:var(--border);margin:8px 0;}
+    .statusbar{height:24px;background:rgba(255,255,255,.02);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:16px;font-family:var(--fn-mono);font-size:10px;color:var(--txt3);flex-shrink:0;}
+    #statusRunner{font-weight:600;}
+
+    #toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+    @keyframes toastIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
+
+    @media(max-width:900px){.pane-output{width:340px;}}
+    @media(max-width:768px){
+      .main-area{margin-left:0!important;}
+      .sidebar{transform:translateX(-100%);}
+      .sidebar.show{transform:translateX(0);}
+      .close-btn{display:flex!important;}
+      .runner-panes{flex-direction:column;}
+      .pane-editor{flex:0 0 55%;border-right:none;border-bottom:1px solid var(--border);}
+      .pane-output{width:100%;flex:1;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="tutupSidebar()"></div>
+
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <a href="index.html" class="sb-logo-link">
+        <div class="logo-icon">&lt;/&gt;</div>
+        <span class="logo-text">JCL</span>
+      </a>
+      <button class="close-btn" id="closeSidebarBtn" onclick="tutupSidebar()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <ul class="sb-nav">
+      <li><a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Beranda
+      </a></li>
+      <li><a href="learn.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Belajar
+      </a></li>
+      <li><a href="daily.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>Daily Challenge
+      </a></li>
+      <li><a href="runner.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Kode Runner
+      </a></li>
+      <li><a href="challenges.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tantangan
+      </a></li>
+      <li><a href="community.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Komunitas
+      </a></li>
+      <div class="nav-divider"></div>
+      <li><a href="friends.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Teman
+      </a></li>
+      <li><a href="shop.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Shop
+      </a></li>
+      <div class="nav-divider"></div>
+      <li id="navLoginLi"><a href="login.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Masuk
+      </a></li>
+      <li id="navProfilLi" style="display:none;"><a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil Saya
+      </a></li>
+    </ul>
+    <div class="sb-bottom">
+      <div class="streak-wrap" id="streakWrap" style="display:none;">
+        <span style="font-size:18px;">🔥</span>
+        <div>
+          <div class="streak-days" id="navStreak">0 Hari</div>
+          <div class="streak-lbl">Streak Aktif</div>
+        </div>
+      </div>
+      <div class="sb-user" onclick="window.location.href='profile.html'">
+        <div class="avatar-sm" id="navAvatar">?</div>
+        <span class="sb-username" id="navUsername">Guest</span>
+      </div>
+      <button class="btn-danger-sm" id="navLogoutBtn" style="display:none;" onclick="logout()">Keluar</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main-area" id="mainArea">
+    <header class="topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title">⌨️ Code Runner — Python</div>
+      <div class="topbar-right">
+        <span class="coins-badge" id="navCoins" style="display:none;">🪙 0</span>
+        <span class="xp-badge" id="navXP">⚡ 0 XP</span>
+        <div class="avatar-sm" id="topbarAvatar" style="cursor:pointer;width:32px;height:32px;font-size:13px;" onclick="window.location.href='profile.html'">?</div>
+      </div>
+    </header>
+
+    <div class="runner-wrap">
+      <!-- TOOLBAR SAMPEL -->
+      <div class="runner-toolbar">
+        <span class="statusbar-text" style="margin-right:4px;">Contoh:</span>
+        <button class="sample-btn" onclick="muatSample('hello')">👋 Hello World</button>
+        <button class="sample-btn" onclick="muatSample('variabel')">📦 Variabel</button>
+        <button class="sample-btn" onclick="muatSample('loop')">🔄 Loop</button>
+        <button class="sample-btn" onclick="muatSample('fungsi')">🔧 Fungsi</button>
+        <button class="sample-btn" onclick="muatSample('kelas')">🏗️ OOP</button>
+        <button class="sample-btn" onclick="muatSample('list_dict')">📋 List & Dict</button>
+        <button class="sample-btn" onclick="muatSample('error')">⚠️ Error Handling</button>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+          <span id="statusRunner" class="statusbar-text" style="color:var(--txt3);">● Siap</span>
+          <button class="btn-clear" id="tombolBersihkan" onclick="bersihkanOutput()">🗑 Bersihkan</button>
+          <button class="btn-run" id="tombolJalankan" onclick="jalankanKode()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Jalankan <kbd>Ctrl+↵</kbd>
+          </button>
+        </div>
+      </div>
+
+      <!-- PANES -->
+      <div class="runner-panes">
+        <!-- EDITOR -->
+        <div class="pane-editor">
+          <div class="pane-header">
+            <div class="pane-dot"></div>
+            MAIN.PY
+            <span style="margin-left:auto;color:var(--blue);">PYTHON 3.X</span>
+          </div>
+          <div id="monacoContainer"></div>
+          <div class="statusbar">
+            <span id="infoKursor">Baris 1, Kolom 1</span>
+            <span id="infoJumlahBaris">— baris</span>
+            <span style="margin-left:auto;">UTF-8</span>
+          </div>
+        </div>
+
+        <!-- OUTPUT -->
+        <div class="pane-output">
+          <div class="pane-header">
+            <div class="pane-dot pane-dot-green"></div>
+            OUTPUT KONSOL
+            <span id="infoWaktu" style="margin-left:auto;color:var(--green);"></span>
+          </div>
+          <div id="outputKode">
+            <div class="out-line out-dim">
+              <span class="out-prefix">▶</span>
+              <span class="out-text">Tekan ▶ Jalankan atau Ctrl+Enter untuk melihat output...</span>
+            </div>
+          </div>
+          <div class="statusbar">
+            <span id="infoOutput">Belum ada output</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/runner.js"></script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Challenge — JCL Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="admin.css"/>
+  <style>
+    .sb-section-label{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:#4a5472;padding:14px 14px 4px;font-family:'Roboto Mono',monospace;}
+    .daily-hero{background:linear-gradient(135deg,#0d1220,#161e2e);border:1px solid rgba(251,191,36,.2);border-radius:16px;padding:28px;margin-bottom:20px;}
+    .daily-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#fbbf24;font-family:'Roboto Mono',monospace;margin-bottom:6px;}
+    .daily-judul{font-size:22px;font-weight:800;color:#e8edf8;margin-bottom:6px;}
+    .daily-meta{font-size:12px;color:#8b95b0;margin-bottom:16px;}
+    .daily-stats{display:flex;gap:20px;flex-wrap:wrap;}
+    .daily-stat{background:rgba(0,0,0,.3);border-radius:10px;padding:12px 18px;text-align:center;min-width:100px;}
+    .daily-stat-num{font-size:24px;font-weight:800;color:#fbbf24;font-family:'Inter',sans-serif;}
+    .daily-stat-lbl{font-size:10px;color:#8b95b0;font-family:'Roboto Mono',monospace;text-transform:uppercase;}
+    .countdown{font-family:'Roboto Mono',monospace;font-size:20px;font-weight:700;color:#34d399;margin-top:10px;}
+    .section-card{background:#111827;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;margin-bottom:16px;}
+    .section-card-title{font-size:14px;font-weight:600;color:#e8edf8;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+    .riwayat-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;}
+    .riwayat-row:last-child{border-bottom:none;}
+    .riwayat-tgl{font-family:'Roboto Mono',monospace;font-size:11px;color:#4f8ef7;width:90px;flex-shrink:0;}
+    .riwayat-judul{flex:1;color:#e8edf8;}
+    .riwayat-peserta{font-family:'Roboto Mono',monospace;font-size:11px;color:#34d399;flex-shrink:0;}
+    .pill{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-family:'Roboto Mono',monospace;}
+    .pill-mudah{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2);}
+    .pill-menengah{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2);}
+    .pill-sulit{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2);}
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sb-brand">
+      <div class="brand-icon">&lt;/&gt;</div>
+      <div><div class="brand-name">JCL Admin</div><div class="brand-sub">Control Panel</div></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section-label">Utama</div>
+      <a href="dashboard.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="stats.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Laporan & Statistik</a>
+      <div class="sb-section-label">Konten</div>
+      <a href="lessons.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Pelajaran</a>
+      <a href="challenges.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tantangan</a>
+      <a href="daily.html" class="sb-link active"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>Daily Challenge</a>
+      <a href="badges.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Badge</a>
+      <a href="shop.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Shop & Cosmetics</a>
+      <div class="sb-section-label">Komunitas</div>
+      <a href="users.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Pengguna</a>
+      <a href="posts.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Komunitas</a>
+      <a href="duel.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/></svg>Duel</a>
+      <div class="sb-divider"></div>
+      <div class="sb-section-label">Sistem</div>
+      <a href="settings.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Pengaturan</a>
+      <a href="../Frontend/index.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Lihat Site</a>
+      <button class="sb-link sb-logout" onclick="adminLogout()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Keluar</button>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="topbar-title">Daily Challenge</div>
+      <div class="topbar-admin" id="adminName">Admin</div>
+    </header>
+    <div class="admin-content">
+
+      <!-- Daily hari ini -->
+      <div class="daily-hero" id="dailyHero">
+        <div class="daily-title">☀️ Daily Challenge Hari Ini</div>
+        <div class="skel" style="height:28px;width:300px;margin-bottom:8px;border-radius:6px;"></div>
+        <div class="skel" style="height:16px;width:200px;margin-bottom:16px;border-radius:4px;"></div>
+        <div class="daily-stats">
+          <div class="daily-stat"><div class="skel" style="height:50px;border-radius:8px;"></div></div>
+          <div class="daily-stat"><div class="skel" style="height:50px;border-radius:8px;"></div></div>
+          <div class="daily-stat"><div class="skel" style="height:50px;border-radius:8px;"></div></div>
+        </div>
+      </div>
+
+      <!-- Riwayat daily -->
+      <div class="section-card">
+        <div class="section-card-title">📅 Riwayat Daily Challenge (30 Hari)</div>
+        <div id="riwayatList"><div class="skel" style="height:200px;border-radius:8px;"></div></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<div id="toastContainer"></div>
+<script src="admin.js"></script>
+<script>
+const API = "http://127.0.0.1:8000";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  requireAdmin();
+  document.getElementById("adminName").textContent = getAdminName();
+
+  try {
+    const daily = await adminFetch("/daily");
+    renderDailyHero(daily);
+  } catch(e) {
+    document.getElementById("dailyHero").innerHTML = `<div style="color:#f87171;font-size:13px;">⚠️ Gagal memuat daily challenge: ${e.message}</div>`;
+  }
+
+  try {
+    // Ambil riwayat dari beberapa user (pakai leaderboard sebagai sampel)
+    const lb = await adminFetch("/leaderboard");
+    renderRiwayatPlaceholder();
+  } catch(e) {}
+});
+
+function renderDailyHero(d) {
+  const now = new Date();
+  const tengahMalam = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
+  let sisa = Math.floor((tengahMalam - now) / 1000);
+  const jam = Math.floor(sisa/3600); sisa %= 3600;
+  const mnt = Math.floor(sisa/60);
+  const dtk = sisa % 60;
+  const fmt2 = n => String(n).padStart(2,"0");
+
+  const pilColor = {"mudah":"mudah","menengah":"menengah","sulit":"sulit"};
+
+  document.getElementById("dailyHero").innerHTML = `
+    <div class="daily-title">☀️ Daily Challenge Hari Ini — ${d.tanggal}</div>
+    <div class="daily-judul">${escHtml(d.judul)}</div>
+    <div class="daily-meta">
+      <span class="pill pill-${pilColor[d.tingkat]||'mudah'}">${d.tingkat}</span>
+      &nbsp; Reward: +${d.xp_bonus} XP · +${d.coin_bonus} Coins
+    </div>
+    <div class="daily-stats">
+      <div class="daily-stat">
+        <div class="daily-stat-num">${d.total_selesai}</div>
+        <div class="daily-stat-lbl">Sudah Selesai</div>
+      </div>
+      <div class="daily-stat">
+        <div class="daily-stat-num">${d.xp_bonus}</div>
+        <div class="daily-stat-lbl">Bonus XP</div>
+      </div>
+      <div class="daily-stat">
+        <div class="daily-stat-num">${d.coin_bonus}</div>
+        <div class="daily-stat-lbl">Bonus Coins</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#8b95b0;">Reset dalam: <span class="countdown" id="countdown">${fmt2(jam)}:${fmt2(mnt)}:${fmt2(dtk)}</span></div>
+  `;
+
+  // Live countdown
+  setInterval(() => {
+    const el = document.getElementById("countdown");
+    if (!el) return;
+    const now2 = new Date();
+    const tMalam = new Date(now2.getFullYear(), now2.getMonth(), now2.getDate()+1);
+    let s2 = Math.floor((tMalam - now2) / 1000);
+    const j = Math.floor(s2/3600); s2 %= 3600;
+    const m = Math.floor(s2/60); s2 %= 60;
+    el.textContent = `${fmt2(j)}:${fmt2(m)}:${fmt2(s2)}`;
+  }, 1000);
+}
+
+function renderRiwayatPlaceholder() {
+  document.getElementById("riwayatList").innerHTML = `
+    <p style="color:#8b95b0;font-size:13px;">
+      Riwayat 30 hari terakhir ditampilkan per user. Gunakan endpoint 
+      <code style="background:#0d1220;padding:2px 6px;border-radius:4px;color:#4f8ef7;">/daily/riwayat</code> 
+      dari akun user untuk melihat riwayat detail.<br><br>
+      Daily challenge saat ini berjalan otomatis — sistem memilih challenge acak setiap tengah malam dari tantangan yang sudah dipublish.
+    </p>
+  `;
+}
+
+function escHtml(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — JCL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="admin.css"/>
+  <style>
+    /* ── Extra styles untuk menu baru ── */
+    .sb-section-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #4a5472;
+      padding: 14px 14px 4px;
+      font-family: 'Roboto Mono', monospace;
+    }
+    .stat-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media(max-width:900px){ .stat-grid-6{ grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:600px){ .stat-grid-6{ grid-template-columns: 1fr; } }
+
+    .quick-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media(max-width:1100px){ .quick-grid-6{ grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:768px) { .quick-grid-6{ grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:480px) { .quick-grid-6{ grid-template-columns: 1fr; } }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    @media(max-width:768px){ .info-row{ grid-template-columns: 1fr; } }
+
+    .info-card {
+      background: #111827;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .info-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e8edf8;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .info-row-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      font-size: 13px;
+    }
+    .info-row-item:last-child { border-bottom: none; }
+    .info-row-item .lbl { color: #8b95b0; }
+    .info-row-item .val { font-weight: 600; color: #e8edf8; font-family: 'Roboto Mono', monospace; font-size: 12px; }
+    .badge-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      font-size: 13px;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon { font-size: 16px; flex-shrink: 0; }
+    .activity-text { flex: 1; color: #8b95b0; }
+    .activity-text strong { color: #e8edf8; }
+    .activity-time { font-size: 11px; color: #4a5472; font-family: 'Roboto Mono', monospace; }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sb-brand">
+      <div class="brand-icon">&lt;/&gt;</div>
+      <div>
+        <div class="brand-name">JCL Admin</div>
+        <div class="brand-sub">Control Panel</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+
+      <!-- UTAMA -->
+      <div class="sb-section-label">Utama</div>
+      <a href="dashboard.html" class="sb-link active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="stats.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Laporan & Statistik
+      </a>
+
+      <!-- KONTEN -->
+      <div class="sb-section-label">Konten</div>
+      <a href="lessons.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Pelajaran
+      </a>
+      <a href="challenges.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Tantangan
+      </a>
+      <a href="daily.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+        Daily Challenge
+      </a>
+      <a href="badges.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        Badge
+      </a>
+      <a href="shop.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Shop & Cosmetics
+      </a>
+
+      <!-- KOMUNITAS -->
+      <div class="sb-section-label">Komunitas</div>
+      <a href="users.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Pengguna
+      </a>
+      <a href="posts.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Komunitas
+      </a>
+      <a href="duel.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+        Duel
+      </a>
+
+      <div class="sb-divider"></div>
+
+      <!-- SISTEM -->
+      <div class="sb-section-label">Sistem</div>
+      <a href="settings.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Pengaturan
+      </a>
+      <a href="../Frontend/index.html" class="sb-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Lihat Site
+      </a>
+      <button class="sb-link sb-logout" onclick="adminLogout()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Keluar
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <span class="topbar-badge" id="topbarTime"></span>
+        <div class="topbar-admin" id="adminName">Admin</div>
+      </div>
+    </header>
+
+    <div class="admin-content">
+
+      <!-- ── STAT CARDS ── -->
+      <div class="stat-grid-6" id="statGrid">
+        <div class="stat-card"><div class="skel" style="height:70px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skel" style="height:70px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skel" style="height:70px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skel" style="height:70px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skel" style="height:70px;border-radius:8px;"></div></div>
+        <div class="stat-card"><div class="skel" style="height:70px;border-radius:8px;"></div></div>
+      </div>
+
+      <!-- ── QUICK ACTIONS ── -->
+      <div class="section-title">Aksi Cepat</div>
+      <div class="quick-grid-6">
+        <a href="lessons.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(79,142,247,.15);color:#4f8ef7;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          </div>
+          <div class="quick-label">Pelajaran</div>
+          <div class="quick-sub">Tambah, edit, hapus</div>
+        </a>
+        <a href="challenges.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(251,146,60,.15);color:#fb923c;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div class="quick-label">Tantangan</div>
+          <div class="quick-sub">Publish, edit, hapus</div>
+        </a>
+        <a href="daily.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+          </div>
+          <div class="quick-label">Daily Challenge</div>
+          <div class="quick-sub">Monitor & riwayat</div>
+        </a>
+        <a href="badges.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(167,139,250,.15);color:#a78bfa;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          </div>
+          <div class="quick-label">Badge</div>
+          <div class="quick-sub">Kelola lencana user</div>
+        </a>
+        <a href="shop.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </div>
+          <div class="quick-label">Shop & Cosmetics</div>
+          <div class="quick-sub">Kelola item toko</div>
+        </a>
+        <a href="users.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(52,211,153,.15);color:#34d399;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+          <div class="quick-label">Pengguna</div>
+          <div class="quick-sub">Ban, promosi, hapus</div>
+        </a>
+        <a href="duel.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(248,113,113,.15);color:#f87171;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/></svg>
+          </div>
+          <div class="quick-label">Duel</div>
+          <div class="quick-sub">Monitor match aktif</div>
+        </a>
+        <a href="stats.html" class="quick-card">
+          <div class="quick-icon" style="background:rgba(99,102,241,.15);color:#6366f1;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="quick-label">Laporan</div>
+          <div class="quick-sub">Statistik lengkap</div>
+        </a>
+      </div>
+
+      <!-- ── INFO ROW ── -->
+      <div class="info-row">
+        <!-- Ringkasan Platform -->
+        <div class="info-card">
+          <div class="info-card-title">📊 Ringkasan Platform</div>
+          <div id="ringkasanList">
+            <div class="skel" style="height:32px;margin-bottom:6px;"></div>
+            <div class="skel" style="height:32px;margin-bottom:6px;"></div>
+            <div class="skel" style="height:32px;margin-bottom:6px;"></div>
+            <div class="skel" style="height:32px;"></div>
+          </div>
+        </div>
+
+        <!-- Aktivitas Terbaru -->
+        <div class="info-card">
+          <div class="info-card-title">⚡ Aktivitas Terbaru</div>
+          <div id="aktivitasList">
+            <div class="skel" style="height:36px;margin-bottom:6px;"></div>
+            <div class="skel" style="height:36px;margin-bottom:6px;"></div>
+            <div class="skel" style="height:36px;margin-bottom:6px;"></div>
+            <div class="skel" style="height:36px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /admin-content -->
+  </main>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="admin.js"></script>
+<script>
+const API = "http://127.0.0.1:8000";
+
+// ── Jam realtime di topbar ──
+function updateJam() {
+  const el = document.getElementById("topbarTime");
+  if (!el) return;
+  const now = new Date();
+  el.textContent = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+setInterval(updateJam, 1000);
+updateJam();
+
+// ── Init ──
+document.addEventListener("DOMContentLoaded", async () => {
+  requireAdmin();
+  document.getElementById("adminName").textContent = getAdminName();
+
+  try {
+    const stats = await adminFetch("/admin/stats");
+    renderStats(stats);
+    renderRingkasan(stats);
+  } catch (e) {
+    tampilToast("Gagal memuat statistik: " + e.message, "error");
+  }
+
+  renderAktivitas();
+});
+
+// ── Render stat cards ──
+function renderStats(s) {
+  const grid = document.getElementById("statGrid");
+  const items = [
+    { label: "Total Pengguna",    value: s.total_users,                    icon: "👥", color: "#4f8ef7" },
+    { label: "Total Pelajaran",   value: s.total_lessons,                  icon: "📚", color: "#a78bfa" },
+    { label: "Total Tantangan",   value: s.total_challenges,               icon: "⚡", color: "#fb923c" },
+    { label: "Total Post",        value: s.total_posts,                    icon: "💬", color: "#34d399" },
+    { label: "Total XP Diberikan",value: (s.total_xp_diberikan||0).toLocaleString("id-ID") + " XP", icon: "🏆", color: "#f59e0b" },
+    { label: "User Aktif 7 Hari", value: s.user_aktif_7_hari,              icon: "🔥", color: "#f87171" },
+  ];
+  grid.innerHTML = items.map(i => `
+    <div class="stat-card">
+      <div class="stat-icon">${i.icon}</div>
+      <div class="stat-value" style="color:${i.color};">${i.value}</div>
+      <div class="stat-label">${i.label}</div>
+    </div>
+  `).join("");
+}
+
+// ── Render ringkasan ──
+function renderRingkasan(s) {
+  const el = document.getElementById("ringkasanList");
+  const rasio = s.total_users > 0
+    ? Math.round((s.user_aktif_7_hari / s.total_users) * 100)
+    : 0;
+  const items = [
+    { lbl: "Rata-rata XP per User", val: s.total_users > 0 ? Math.round(s.total_xp_diberikan / s.total_users).toLocaleString("id-ID") + " XP" : "—" },
+    { lbl: "Rasio User Aktif",      val: rasio + "%" },
+    { lbl: "Total Konten",          val: (s.total_lessons + s.total_challenges) + " item" },
+    { lbl: "Status Server",         val: "🟢 Online" },
+  ];
+  el.innerHTML = items.map(i => `
+    <div class="info-row-item">
+      <span class="lbl">${i.lbl}</span>
+      <span class="val">${i.val}</span>
+    </div>
+  `).join("");
+}
+
+// ── Render aktivitas (simulasi, bisa disambungkan ke endpoint log) ──
+function renderAktivitas() {
+  const el = document.getElementById("aktivitasList");
+  const now = new Date();
+  const fmt = (mnt) => {
+    const d = new Date(now - mnt * 60000);
+    return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  };
+  const items = [
+    { icon: "👤", text: "User baru mendaftar",          time: fmt(3)  },
+    { icon: "⚡", text: "Challenge berhasil diselesaikan", time: fmt(7) },
+    { icon: "💬", text: "Post baru di komunitas",        time: fmt(12) },
+    { icon: "🏆", text: "Badge baru diraih user",        time: fmt(20) },
+    { icon: "🛍️", text: "Item shop dibeli",              time: fmt(35) },
+  ];
+  el.innerHTML = items.map(i => `
+    <div class="activity-item">
+      <span class="activity-icon">${i.icon}</span>
+      <span class="activity-text">${i.text}</span>
+      <span class="activity-time">${i.time}</span>
+    </div>
+  `).join("");
+}
+</script>
+</body>
+</html>

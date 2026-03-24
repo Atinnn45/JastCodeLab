@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Duel — JastCodeLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+:root{--bg:#080c14;--bg2:#0d1220;--bg3:#111827;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--blue:#4f8ef7;--green:#34d399;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--yellow:#fbbf24;--txt:#e8edf8;--txt2:#8b95b0;--txt3:#4a5472;--fn-display:'Syne',sans-serif;--fn-mono:'JetBrains Mono',monospace;--fn-body:'DM Sans',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:var(--fn-body);font-size:15px;}
+a{text-decoration:none;color:inherit;}button{font-family:var(--fn-body);}
+
+/* Sidebar */
+.sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none;}
+.sb-overlay.show{display:block;}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.sidebar.hidden{transform:translateX(-100%);}
+.main-area{margin-left:220px;transition:margin .28s;min-height:100vh;}
+.main-area.full{margin-left:0;}
+.sb-logo{display:flex;align-items:center;justify-content:space-between;padding:16px 14px;border-bottom:1px solid var(--border);}
+.sb-logo-link{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--fn-mono);font-size:11px;font-weight:700;color:#fff;}
+.logo-text{font-family:var(--fn-display);font-size:15px;font-weight:800;}
+.sb-close-btn{background:none;border:none;cursor:pointer;color:var(--txt3);padding:4px;border-radius:5px;}
+.sb-close-btn:hover{color:var(--txt);}
+.sb-nav{flex:1;padding:10px;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--txt2);transition:all .15s;margin-bottom:2px;border:1px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--txt);}
+.nav-item.active{background:rgba(79,142,247,.12);color:var(--blue);border-color:rgba(79,142,247,.25);}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;}
+.sb-bottom{padding:10px;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:6px;}
+.sb-user:hover{background:rgba(255,255,255,.05);}
+.avatar-sm{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.sb-username{font-size:13px;font-weight:500;}
+.btn-danger-block{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:8px;font-size:13px;cursor:pointer;width:100%;}
+
+/* Topbar */
+.topbar{position:sticky;top:0;height:54px;background:rgba(8,12,20,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;}
+.topbar-title{font-size:14px;color:var(--txt2);flex:1;}
+.xp-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2);}
+.menu-btn{background:none;border:none;cursor:pointer;color:var(--txt2);padding:6px;border-radius:7px;display:flex;align-items:center;}
+.menu-btn:hover{background:rgba(255,255,255,.07);}
+
+/* ════ Page ════ */
+.page{padding:24px;max-width:900px;margin:0 auto;}
+
+/* ════ Scoreboard Header ════ */
+.scoreboard{
+  display:flex;align-items:center;gap:16px;
+  background:linear-gradient(135deg,var(--bg2),#161e2e);
+  border:1px solid var(--border);border-radius:16px;
+  padding:20px 24px;margin-bottom:20px;
+}
+.player-block{flex:1;text-align:center;}
+.player-av{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fn-display);font-size:22px;font-weight:800;color:#fff;
+  margin:0 auto 8px;
+}
+.player-name{font-family:var(--fn-display);font-size:15px;font-weight:700;}
+.player-title{font-family:var(--fn-mono);font-size:10px;color:var(--purple);margin-top:2px;}
+.player-score{
+  font-family:var(--fn-display);font-size:40px;font-weight:800;
+  letter-spacing:-2px;line-height:1;margin-top:8px;
+}
+.score-left{color:var(--blue);}
+.score-right{color:var(--orange);}
+.vs-block{text-align:center;flex-shrink:0;}
+.vs-text{font-family:var(--fn-display);font-size:22px;font-weight:800;color:var(--txt3);}
+.status-pill{
+  font-family:var(--fn-mono);font-size:10px;text-transform:uppercase;letter-spacing:.8px;
+  padding:3px 10px;border-radius:100px;margin-top:6px;display:inline-block;
+}
+.pill-waiting  {background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+.pill-active   {background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.25);}
+.pill-selesai  {background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+.pill-ditolak  {background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+
+/* ════ Soal Progress ════ */
+.soal-progress{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.soal-dot{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fn-mono);font-size:12px;font-weight:700;
+  border:2px solid var(--border);color:var(--txt3);
+  cursor:pointer;transition:all .15s;background:var(--bg2);
+}
+.soal-dot:hover{border-color:var(--border2);}
+.soal-dot.aktif{border-color:var(--blue);color:var(--blue);background:rgba(79,142,247,.1);}
+.soal-dot.benar{border-color:var(--green);color:var(--green);background:rgba(52,211,153,.1);}
+.soal-dot.salah{border-color:var(--red);color:var(--red);background:rgba(248,113,113,.08);}
+
+/* ════ Soal Card ════ */
+.soal-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  padding:22px;margin-bottom:16px;
+}
+.soal-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.soal-num{font-family:var(--fn-mono);font-size:11px;color:var(--txt3);}
+.soal-judul{font-family:var(--fn-display);font-size:17px;font-weight:700;}
+.soal-tingkat{font-family:var(--fn-mono);font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:2px 8px;border-radius:100px;}
+.mudah   {background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2);}
+.menengah{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2);}
+.sulit   {background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+.soal-desc{font-size:13.5px;color:var(--txt2);line-height:1.7;margin-bottom:14px;}
+.io-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.io-box{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.io-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);padding:4px 10px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);font-family:var(--fn-mono);}
+.io-box pre{padding:8px 10px;font-family:var(--fn-mono);font-size:11px;color:var(--txt2);overflow-x:auto;}
+
+/* ════ Editor ════ */
+.editor-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
+.editor-hdr{display:flex;align-items:center;gap:8px;padding:7px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);}
+.editor-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+.editor-lbl{font-family:var(--fn-mono);font-size:11px;color:var(--txt3);}
+.code-editor{
+  width:100%;min-height:180px;background:#080c14;color:#e8edf8;
+  font-family:var(--fn-mono);font-size:13px;line-height:1.7;
+  padding:14px;border:none;outline:none;resize:vertical;
+  tab-size:4;
+}
+.output-box{
+  background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;
+  padding:12px;font-family:var(--fn-mono);font-size:12px;
+  color:var(--txt2);min-height:50px;white-space:pre-wrap;word-break:break-all;
+  margin-bottom:12px;
+}
+.output-benar{border-color:rgba(52,211,153,.3);color:var(--green);}
+.output-salah{border-color:rgba(248,113,113,.3);color:var(--red);}
+
+/* ════ Buttons ════ */
+.btn-run{display:inline-flex;align-items:center;gap:6px;background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3);border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-run:hover{background:rgba(52,211,153,.25);}
+.btn-run:disabled{opacity:.4;cursor:not-allowed;}
+.btn-submit{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border:none;border-radius:7px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-submit:hover{background:#3a7de8;}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed;}
+.btn-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* ════ State Screens ════ */
+.state-screen{
+  text-align:center;padding:48px 24px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+}
+.state-icon{font-size:3.5rem;margin-bottom:14px;}
+.state-title{font-family:var(--fn-display);font-size:22px;font-weight:800;margin-bottom:8px;}
+.state-desc{font-size:14px;color:var(--txt2);margin-bottom:20px;line-height:1.6;}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-primary:hover{background:#3a7de8;}
+.btn-secondary{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--txt2);border:1px solid var(--border2);border-radius:8px;padding:10px 20px;font-size:13px;cursor:pointer;transition:all .2s;margin-left:8px;}
+.btn-secondary:hover{color:var(--txt);}
+
+/* ════ Hasil Duel Popup ════ */
+#hasilPopup{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(8px);}
+.hasil-card{
+  background:linear-gradient(145deg,#0d1220,#111827);
+  border:1px solid rgba(167,139,250,.3);border-radius:20px;
+  padding:40px 36px;max-width:440px;width:92%;text-align:center;
+  box-shadow:0 0 60px rgba(124,58,237,.25);
+  animation:cardIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes cardIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.hasil-trophy{font-size:3.5rem;margin-bottom:12px;}
+.hasil-title{font-family:var(--fn-display);font-size:1.6rem;font-weight:800;margin-bottom:8px;}
+.hasil-desc{font-size:14px;color:var(--txt2);margin-bottom:20px;}
+.hasil-scores{display:flex;gap:20px;justify-content:center;margin-bottom:20px;}
+.hasil-score-box{text-align:center;}
+.hasil-score-num{font-family:var(--fn-display);font-size:2.5rem;font-weight:800;line-height:1;}
+.hasil-score-lbl{font-size:11px;color:var(--txt3);font-family:var(--fn-mono);margin-top:4px;}
+.hasil-reward{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+.reward-pill{font-family:var(--fn-mono);font-size:13px;font-weight:700;padding:6px 16px;border-radius:100px;}
+.reward-xp   {background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3);}
+.reward-coins{background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.3);}
+
+/* Toast */
+#toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+.skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{to{background-position:-200% 0;}}
+@media(max-width:768px){.main-area{margin-left:0!important;}.sidebar{transform:translateX(-100%)}.sidebar.show{transform:translateX(0)}.io-wrap{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="sb-overlay" id="sbOverlay" onclick="tutupSidebar()"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html" class="sb-logo-link"><div class="logo-icon">&lt;/&gt;</div><span class="logo-text">JCL</span></a>
+    <button class="sb-close-btn" onclick="tutupSidebar()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <ul class="sb-nav">
+    <li><a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Beranda</a></li>
+    <li><a href="challenges.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tantangan</a></li>
+    <li><a href="friends.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Teman</a></li>
+    <li><a href="duel.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 9H17v1.5c0 .83-.67 1.5-1.5 1.5"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8H3.5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 15H7v-1.5c0-.83.67-1.5 1.5-1.5"/></svg>Duel</a></li>
+    <li id="navLiLogin"><a href="login.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Masuk</a></li>
+    <li id="navLiProfil" style="display:none;"><a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a></li>
+  </ul>
+  <div class="sb-bottom">
+    <div class="sb-user" onclick="window.location.href='profile.html'">
+      <div class="avatar-sm" id="navAvatar">?</div>
+      <span class="sb-username" id="navUsername">Guest</span>
+    </div>
+    <button class="btn-danger-block" id="navBtnKeluar" style="display:none;" onclick="logout()">Keluar</button>
+  </div>
+</nav>
+
+<div class="main-area" id="mainArea">
+  <header class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-title">⚔️ Duel Challenge</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="xp-badge" id="navXP">⚡ 0 XP</span>
+      <div class="avatar-sm" id="navAvatarTop" style="width:32px;height:32px;font-size:13px;cursor:pointer;" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </header>
+
+  <div class="page" id="pageContent">
+    <div class="skel" style="height:120px;border-radius:16px;margin-bottom:20px;"></div>
+    <div class="skel" style="height:300px;border-radius:14px;"></div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+
+const API    = "http://127.0.0.1:8000";
+const SB_KEY = "jcl_sidebar_open";
+let sidebarOpen = true;
+
+/* ── Sidebar ── */
+function toggleSidebar(){ sidebarOpen=!sidebarOpen; localStorage.setItem(SB_KEY,sidebarOpen?"1":"0"); applySidebar(); }
+function tutupSidebar(){ sidebarOpen=false; applySidebar(); }
+function applySidebar(){
+  const sb=document.getElementById("sidebar"),ma=document.getElementById("mainArea"),
+        ov=document.getElementById("sbOverlay"),mob=window.innerWidth<=768;
+  if(sidebarOpen){ sb.classList.remove("hidden");sb.classList.add("show");
+    if(mob){ov.classList.add("show");ma.classList.add("full");}
+    else{ov.classList.remove("show");ma.classList.remove("full");ma.style.marginLeft="220px";}
+  } else { sb.classList.add("hidden");sb.classList.remove("show");ov.classList.remove("show");
+    if(!mob) ma.style.marginLeft="0"; else ma.classList.remove("full"); }
+}
+window.addEventListener("resize",()=>{ if(window.innerWidth>768){ document.getElementById("sbOverlay").classList.remove("show"); document.getElementById("mainArea").classList.remove("full"); if(sidebarOpen) document.getElementById("mainArea").style.marginLeft="220px"; }});
+
+/* ── Nav ── */
+function updateNavUser(){
+  const user=getUser(), ok=sudahLogin();
+  document.getElementById("navLiLogin").style.display  = ok?"none":"";
+  document.getElementById("navLiProfil").style.display = ok?"":"none";
+  document.getElementById("navBtnKeluar").style.display= ok?"":"none";
+  if(!user) return;
+  document.getElementById("navUsername").textContent   = user.username;
+  document.getElementById("navAvatar").textContent     = user.username[0].toUpperCase();
+  document.getElementById("navAvatarTop").textContent  = user.username[0].toUpperCase();
+  document.getElementById("navXP").textContent         = `⚡ ${user.xp??0} XP`;
+}
+
+/* ── Toast ── */
+function tampilToast(pesan, tipe="info", dur=3500){
+  let c=document.getElementById("toastContainer");
+  const el=document.createElement("div");
+  const w=tipe==="success"?"#34d399":tipe==="error"?"#f87171":tipe==="warning"?"#fb923c":"#4f8ef7";
+  el.style.cssText=`background:#111827;border:1px solid ${w}33;border-left:3px solid ${w};color:${w};padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.4);animation:fadeIn .2s ease;`;
+  el.textContent=pesan; c.appendChild(el);
+  setTimeout(()=>{el.style.opacity="0";el.style.transition="opacity .3s";setTimeout(()=>el.remove(),300);},dur);
+}
+
+function escHtml(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function warnaDariNama(str){
+  const p=["linear-gradient(135deg,#6366f1,#8b5cf6)","linear-gradient(135deg,#10b981,#059669)","linear-gradient(135deg,#f59e0b,#d97706)","linear-gradient(135deg,#3b82f6,#2563eb)","linear-gradient(135deg,#ec4899,#db2777)"];
+  let h=0; for(const c of str) h=(h*31+c.charCodeAt(0))%p.length; return p[h];
+}
+function authHeaders(){ const t=localStorage.getItem("jcl_token"); return t?{"Authorization":`Bearer ${t}`,"Content-Type":"application/json"}:{"Content-Type":"application/json"}; }
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let matchData   = null;   // data duel dari GET /duel/{id}
+let soalAktif   = 0;      // index soal aktif (0-based)
+let jawabanSaya = {};     // {urutan: true/false}
+let sedangRun   = false;
+
+// ════════════════════════════════════════
+// LOAD — cek URL params
+// ════════════════════════════════════════
+async function init(){
+  requireLogin();
+  updateNavUser();
+  const saved=localStorage.getItem(SB_KEY);
+  sidebarOpen=window.innerWidth<=768?false:(saved===null?true:saved==="1");
+  applySidebar();
+
+  const params  = new URLSearchParams(window.location.search);
+  const matchId = params.get("id");
+
+  if(matchId){
+    // Buka duel spesifik
+    await muatDuel(parseInt(matchId));
+  } else {
+    // Tampilkan dashboard: duel aktif + riwayat
+    await tampilDashboard();
+  }
+}
+
+// ════════════════════════════════════════
+// DASHBOARD — list duel aktif & riwayat
+// ════════════════════════════════════════
+async function tampilDashboard(){
+  const page = document.getElementById("pageContent");
+  page.innerHTML = `
+    <div style="margin-bottom:24px;">
+      <h1 style="font-family:var(--fn-display);font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:4px;">⚔️ Duel Challenge</h1>
+      <p style="font-size:13px;color:var(--txt2);">Tantang temanmu dalam duel coding 1v1 — 5 soal, siapa lebih banyak benar yang menang!</p>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <div style="font-family:var(--fn-display);font-size:15px;font-weight:700;margin-bottom:12px;">⚔️ Duel Aktif & Menunggu</div>
+      <div id="listAktif"><div class="skel" style="height:56px;border-radius:10px;"></div></div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;">
+      <div style="font-family:var(--fn-display);font-size:15px;font-weight:700;margin-bottom:12px;">📜 Riwayat Duel</div>
+      <div id="listRiwayat"><div class="skel" style="height:56px;border-radius:10px;"></div></div>
+    </div>`;
+
+  await Promise.all([muatAktif(), muatRiwayat()]);
+}
+
+async function muatAktif(){
+  const el = document.getElementById("listAktif");
+  try {
+    const res  = await fetch(`${API}/duel/aktif/saya`, {headers:authHeaders()});
+    const data = await res.json();
+    const user = getUser();
+
+    if(!data.length){
+      el.innerHTML=`<p style="font-size:13px;color:var(--txt3);">Tidak ada duel aktif. Tantang temanmu dari halaman <a href="friends.html" style="color:var(--blue);">Teman</a>!</p>`;
+      return;
+    }
+
+    el.innerHTML = data.map(d => {
+      const lawan = d.is_challenger ? d.player2 : d.player1;
+      const isWaiting = d.status==="waiting";
+      const isMyChallengeWaiting = isWaiting && d.is_challenger;
+      const isTheirChallengeWaiting = isWaiting && !d.is_challenger;
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,.02);margin-bottom:6px;border:1px solid var(--border);">
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;">vs ${escHtml(lawan)}</div>
+            <div style="font-family:var(--fn-mono);font-size:11px;color:var(--txt3);margin-top:2px;">
+              ${isWaiting ? (isMyChallengeWaiting ? "⏳ Menunggu lawan menerima" : "📬 Kamu ditantang!") : "🔥 Sedang berlangsung"}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            ${isTheirChallengeWaiting ? `
+              <button onclick="terimaDuel(${d.match_id})" style="background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3);border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;">✓ Terima</button>
+              <button onclick="tolakDuel(${d.match_id})" style="background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:7px;padding:7px 12px;font-size:12px;cursor:pointer;">✕</button>
+            ` : `
+              <button onclick="window.location.href='duel.html?id=${d.match_id}'" style="background:var(--blue);color:#fff;border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;">
+                ${d.status==='active'?'⚔️ Main':'👁 Lihat'}
+              </button>
+            `}
+          </div>
+        </div>`;
+    }).join("");
+  } catch(e){
+    el.innerHTML=`<p style="color:var(--txt3);font-size:13px;">Gagal memuat.</p>`;
+  }
+}
+
+async function muatRiwayat(){
+  const el = document.getElementById("listRiwayat");
+  try {
+    const res  = await fetch(`${API}/duel/riwayat/saya`, {headers:authHeaders()});
+    const data = await res.json();
+    const user = getUser();
+
+    const selesai = data.filter(d=>d.status==="selesai");
+    if(!selesai.length){
+      el.innerHTML=`<p style="font-size:13px;color:var(--txt3);">Belum ada riwayat duel yang selesai.</p>`;
+      return;
+    }
+
+    el.innerHTML = selesai.map(d => {
+      const lawan = d.player1===user?.username ? d.player2 : d.player1;
+      const hasilIcon = d.seri ? "🤝" : d.menang ? "🏆" : "💀";
+      const hasilText = d.seri ? "Seri" : d.menang ? "Menang" : "Kalah";
+      const hasilWarna = d.seri ? "var(--yellow)" : d.menang ? "var(--green)" : "var(--red)";
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,.02);margin-bottom:6px;border:1px solid var(--border);">
+          <div style="font-size:1.4rem;">${hasilIcon}</div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;">vs ${escHtml(lawan)}</div>
+            <div style="font-family:var(--fn-mono);font-size:11px;color:var(--txt3);margin-top:2px;">
+              ${d.score1}-${d.score2} · ${new Date(d.created_at).toLocaleDateString("id-ID")}
+            </div>
+          </div>
+          <div style="font-family:var(--fn-mono);font-size:12px;font-weight:700;color:${hasilWarna};">${hasilText}</div>
+          <button onclick="window.location.href='duel.html?id=${d.match_id}'" style="background:transparent;color:var(--txt3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;">Lihat</button>
+        </div>`;
+    }).join("");
+  } catch(e){
+    el.innerHTML=`<p style="color:var(--txt3);font-size:13px;">Gagal memuat riwayat.</p>`;
+  }
+}
+
+// ════════════════════════════════════════
+// TERIMA / TOLAK dari dashboard
+// ════════════════════════════════════════
+async function terimaDuel(matchId){
+  try {
+    const res  = await fetch(`${API}/duel/terima/${matchId}`, {method:"POST",headers:authHeaders()});
+    const data = await res.json();
+    if(!res.ok){ tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("⚔️ Duel dimulai!", "success");
+    window.location.href = `duel.html?id=${matchId}`;
+  } catch(e){ tampilToast("Gagal terhubung","error"); }
+}
+
+async function tolakDuel(matchId){
+  try {
+    const res  = await fetch(`${API}/duel/tolak/${matchId}`, {method:"POST",headers:authHeaders()});
+    const data = await res.json();
+    if(!res.ok){ tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("Tantangan ditolak","info");
+    muatAktif();
+  } catch(e){ tampilToast("Gagal terhubung","error"); }
+}
+
+// ════════════════════════════════════════
+// MUAT DETAIL DUEL
+// ════════════════════════════════════════
+async function muatDuel(matchId){
+  try {
+    const res = await fetch(`${API}/duel/${matchId}`, {headers:authHeaders()});
+    if(!res.ok){ tampilToast("Duel tidak ditemukan","error"); setTimeout(()=>window.location.href="duel.html",1500); return; }
+    matchData = await res.json();
+
+    // Rebuild jawabanSaya dari data
+    jawabanSaya = {};
+    const myId = matchData.my_id;
+    for(const [key, val] of Object.entries(matchData.jawaban)){
+      const [uid, urutan] = key.split("_").map(Number);
+      if(uid === myId) jawabanSaya[urutan] = val;
+    }
+
+    renderDuel();
+  } catch(e){
+    document.getElementById("pageContent").innerHTML=`<div class="state-screen"><div class="state-icon">❌</div><div class="state-title">Gagal Memuat</div><div class="state-desc">${e.message}</div><button class="btn-primary" onclick="window.location.href='duel.html'">Kembali</button></div>`;
+  }
+}
+
+// ════════════════════════════════════════
+// RENDER DUEL
+// ════════════════════════════════════════
+function renderDuel(){
+  if(!matchData) return;
+  const page = document.getElementById("pageContent");
+  const {status, player1, player2, score1, score2, is_player1, soal, winner_id, my_id} = matchData;
+
+  const statusMap = {waiting:"⏳ Menunggu",active:"🔥 Berlangsung",selesai:"✅ Selesai",ditolak:"❌ Ditolak"};
+  const statusCls = {waiting:"pill-waiting",active:"pill-active",selesai:"pill-selesai",ditolak:"pill-ditolak"};
+
+  // ── Jika status waiting dan bukan challenger ──
+  if(status === "waiting" && !is_player1){
+    page.innerHTML = `
+      <div class="state-screen">
+        <div class="state-icon">📬</div>
+        <div class="state-title">${escHtml(player1?.username)} menantangmu!</div>
+        <div class="state-desc">Kamu ditantang untuk duel 5 soal coding. Terima atau tolak tantangan ini.</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="terimaDuelPage()">⚔️ Terima Duel</button>
+          <button class="btn-secondary" onclick="tolakDuelPage()">✕ Tolak</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // ── Jika waiting dan kita challenger ──
+  if(status === "waiting" && is_player1){
+    page.innerHTML = `
+      <div class="state-screen">
+        <div class="state-icon">⏳</div>
+        <div class="state-title">Menunggu ${escHtml(player2?.username)}...</div>
+        <div class="state-desc">Tantanganmu sudah dikirim. Tunggu lawan menerimanya.</div>
+        <button class="btn-secondary" onclick="window.location.href='duel.html'">← Kembali</button>
+      </div>`;
+    return;
+  }
+
+  // ── Jika ditolak ──
+  if(status === "ditolak"){
+    page.innerHTML = `
+      <div class="state-screen">
+        <div class="state-icon">💔</div>
+        <div class="state-title">Tantangan Ditolak</div>
+        <div class="state-desc">Lawan menolak tantangan duelmu.</div>
+        <button class="btn-primary" onclick="window.location.href='friends.html'">Tantang Lagi</button>
+      </div>`;
+    return;
+  }
+
+  // ── Render scoreboard + soal ──
+  const p1 = player1 || {}; const p2 = player2 || {};
+  const myScore    = is_player1 ? score1 : score2;
+  const lawanScore = is_player1 ? score2 : score1;
+
+  page.innerHTML = `
+    <!-- Scoreboard -->
+    <div class="scoreboard">
+      <div class="player-block">
+        <div class="player-av" style="background:${warnaDariNama(p1.username||'a')};">${(p1.username||'?')[0].toUpperCase()}</div>
+        <div class="player-name">${escHtml(p1.username||'')} ${is_player1?'(Kamu)':''}</div>
+        ${p1.active_title?`<div class="player-title">${escHtml(p1.active_title)}</div>`:''}
+        <div class="player-score score-left">${score1}</div>
+      </div>
+      <div class="vs-block">
+        <div class="vs-text">VS</div>
+        <div class="status-pill ${statusCls[status]||'pill-waiting'}">${statusMap[status]||status}</div>
+      </div>
+      <div class="player-block">
+        <div class="player-av" style="background:${warnaDariNama(p2.username||'b')};">${(p2.username||'?')[0].toUpperCase()}</div>
+        <div class="player-name">${escHtml(p2.username||'')} ${!is_player1?'(Kamu)':''}</div>
+        ${p2.active_title?`<div class="player-title">${escHtml(p2.active_title)}</div>`:''}
+        <div class="player-score score-right">${score2}</div>
+      </div>
+    </div>
+
+    <!-- Progress soal -->
+    <div class="soal-progress" id="soalProgress">
+      ${soal.map((s,i)=>{
+        const ur = s.urutan;
+        const jawabSaya  = jawabanSaya[ur];
+        const cls = jawabSaya===true?"benar":jawabSaya===false?"salah":(soalAktif===i?"aktif":"");
+        return `<div class="soal-dot ${cls}" onclick="pilihSoal(${i})" id="dot-${i}">${ur}</div>`;
+      }).join("")}
+    </div>
+
+    <!-- Soal aktif -->
+    <div id="soalArea"></div>
+  `;
+
+  renderSoalAktif();
+
+  // Jika selesai → tampilkan hasil
+  if(status === "selesai"){
+    tampilHasilPopup(winner_id, score1, score2, is_player1, p1, p2);
+  }
+}
+
+function pilihSoal(idx){
+  soalAktif = idx;
+  // Update dots
+  matchData.soal.forEach((s,i)=>{
+    const dot = document.getElementById(`dot-${i}`);
+    if(!dot) return;
+    const ur = s.urutan;
+    const jawab = jawabanSaya[ur];
+    dot.className = "soal-dot" + (jawab===true?" benar":jawab===false?" salah":i===idx?" aktif":"");
+  });
+  renderSoalAktif();
+}
+
+function renderSoalAktif(){
+  const area = document.getElementById("soalArea");
+  if(!area || !matchData) return;
+  const soal  = matchData.soal[soalAktif];
+  const ur    = soal.urutan;
+  const sudah = jawabanSaya[ur] !== undefined;
+  const benar = jawabanSaya[ur] === true;
+  const aktif = matchData.status === "active";
+
+  area.innerHTML = `
+    <div class="soal-card">
+      <div class="soal-header">
+        <span class="soal-num">Soal ${ur} / ${matchData.soal.length}</span>
+        <span class="soal-judul">${escHtml(soal.judul)}</span>
+        <span class="soal-tingkat ${soal.tingkat}">${soal.tingkat}</span>
+      </div>
+      <div class="soal-desc">${escHtml(soal.deskripsi)}</div>
+      <div class="io-wrap">
+        <div class="io-box"><div class="io-lbl">Input</div><pre>${escHtml(soal.contoh_input||'-')}</pre></div>
+        <div class="io-box"><div class="io-lbl">Output</div><pre>${escHtml(soal.contoh_output||'-')}</pre></div>
+      </div>
+
+      ${sudah ? `
+        <div class="output-box ${benar?'output-benar':'output-salah'}">
+          ${benar ? '✅ Jawaban Benar!' : '❌ Jawaban Salah'}
+        </div>
+      ` : aktif ? `
+        <div class="editor-wrap">
+          <div class="editor-hdr"><div class="editor-dot"></div><span class="editor-lbl">solusi.py</span></div>
+          <textarea class="code-editor" id="codeEditor" spellcheck="false" onkeydown="handleTab(event)">${escHtml(soal.kode_awal||'# Tulis solusimu di sini\n')}</textarea>
+        </div>
+        <div class="output-box" id="outputBox">Tekan Jalankan untuk mengecek...</div>
+        <div class="btn-actions">
+          <button class="btn-run" id="btnRun" onclick="jalankanKode()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Jalankan
+          </button>
+          <button class="btn-submit" id="btnSubmit" onclick="submitJawaban()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Submit Jawaban
+          </button>
+        </div>
+      ` : `<div class="output-box">Duel belum aktif atau sudah selesai.</div>`}
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:8px;">
+      <button onclick="pilihSoal(${Math.max(0,soalAktif-1)})" style="background:transparent;color:var(--txt3);border:1px solid var(--border);border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer;" ${soalAktif===0?'disabled':''}>← Prev</button>
+      <button onclick="pilihSoal(${Math.min(matchData.soal.length-1,soalAktif+1)})" style="background:transparent;color:var(--txt3);border:1px solid var(--border);border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer;" ${soalAktif===matchData.soal.length-1?'disabled':''}>Next →</button>
+    </div>`;
+}
+
+// ════════════════════════════════════════
+// JALANKAN KODE (preview)
+// ════════════════════════════════════════
+async function jalankanKode(){
+  if(sedangRun) return;
+  const kode = document.getElementById("codeEditor")?.value.trim();
+  if(!kode) return;
+  const btnRun = document.getElementById("btnRun");
+  const outBox = document.getElementById("outputBox");
+  sedangRun = true;
+  if(btnRun){ btnRun.disabled=true; btnRun.textContent="Menjalankan..."; }
+  if(outBox){ outBox.className="output-box"; outBox.textContent="Menjalankan..."; }
+  try {
+    const res  = await fetch(`${API}/run-code`, {method:"POST",headers:authHeaders(),body:JSON.stringify({kode})});
+    const data = await res.json();
+    if(outBox){
+      outBox.textContent = data.error ? `Error:\n${data.error}` : (data.output||"(tidak ada output)");
+    }
+  } catch(e){
+    if(outBox) outBox.textContent = "Gagal terhubung ke backend.";
+  }
+  sedangRun = false;
+  if(btnRun){ btnRun.disabled=false; btnRun.innerHTML=`<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Jalankan`; }
+}
+
+// ════════════════════════════════════════
+// SUBMIT JAWABAN
+// ════════════════════════════════════════
+async function submitJawaban(){
+  const kode   = document.getElementById("codeEditor")?.value.trim();
+  const btnSub = document.getElementById("btnSubmit");
+  if(!kode){ tampilToast("Tulis kode dulu!","warning"); return; }
+  if(!matchData) return;
+  const soal = matchData.soal[soalAktif];
+  const ur   = soal.urutan;
+  if(btnSub){ btnSub.disabled=true; btnSub.textContent="Mengecek..."; }
+  try {
+    const res  = await fetch(`${API}/duel/${matchData.match_id}/jawab/${ur}`, {
+      method:"POST", headers:authHeaders(), body:JSON.stringify({kode})
+    });
+    const data = await res.json();
+    if(!res.ok){ tampilToast(data.detail||"Gagal","error"); return; }
+
+    // Simpan jawaban lokal
+    jawabanSaya[ur] = data.benar;
+
+    // Update score di matchData
+    if(matchData.is_player1) matchData.score1 = data.score1;
+    else matchData.score2 = data.score2;
+    matchData.score1 = data.score1; matchData.score2 = data.score2;
+
+    if(data.benar) tampilToast("✅ Jawaban Benar! +1 poin","success");
+    else tampilToast("❌ Jawaban Salah","error");
+
+    // Jika duel selesai
+    if(data.hasil_duel?.selesai){
+      matchData.status    = "selesai";
+      matchData.winner_id = data.hasil_duel.winner_id;
+      renderDuel();
+      tampilHasilPopup(
+        data.hasil_duel.winner_id,
+        data.hasil_duel.score1,
+        data.hasil_duel.score2,
+        matchData.is_player1,
+        matchData.player1, matchData.player2,
+        data.hasil_duel
+      );
+    } else {
+      renderDuel();
+      // Auto pindah ke soal berikutnya yang belum dijawab
+      const berikut = matchData.soal.findIndex((s,i) => jawabanSaya[s.urutan] === undefined);
+      if(berikut !== -1) setTimeout(()=>pilihSoal(berikut), 600);
+    }
+  } catch(e){ tampilToast("Gagal terhubung","error"); }
+  if(btnSub){ btnSub.disabled=false; btnSub.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Submit Jawaban`; }
+}
+
+// ════════════════════════════════════════
+// POPUP HASIL DUEL
+// ════════════════════════════════════════
+function tampilHasilPopup(winnerId, score1, score2, isP1, p1, p2, hasilData=null){
+  const myId    = matchData.my_id;
+  const menang  = winnerId === myId;
+  const seri    = !winnerId;
+
+  const trophy = seri?"🤝":menang?"🏆":"💀";
+  const title  = seri?"Seri!":menang?"Kamu Menang! 🎉":"Kamu Kalah";
+  const desc   = seri?`Pertarungan sengit! ${score1} - ${score2}`
+               : menang?`Selamat! Kamu mengalahkan ${escHtml((isP1?p2:p1)?.username||'')}!`
+               :`${escHtml((isP1?p2:p1)?.username||'')} lebih unggul kali ini.`;
+
+  const xp    = hasilData?.xp_diperoleh    ?? (menang?20:seri?15:10);
+  const coins = hasilData?.coins_diperoleh ?? (menang?10:seri?5:0);
+
+  const popup = document.createElement("div");
+  popup.id = "hasilPopup";
+  popup.innerHTML = `
+    <div class="hasil-card">
+      <div class="hasil-trophy">${trophy}</div>
+      <div class="hasil-title">${title}</div>
+      <div class="hasil-desc">${desc}</div>
+      <div class="hasil-scores">
+        <div class="hasil-score-box">
+          <div class="hasil-score-num" style="color:var(--blue);">${score1}</div>
+          <div class="hasil-score-lbl">${escHtml(p1?.username||'Player 1')}</div>
+        </div>
+        <div style="font-family:var(--fn-display);font-size:1.5rem;color:var(--txt3);padding-top:8px;">:</div>
+        <div class="hasil-score-box">
+          <div class="hasil-score-num" style="color:var(--orange);">${score2}</div>
+          <div class="hasil-score-lbl">${escHtml(p2?.username||'Player 2')}</div>
+        </div>
+      </div>
+      <div class="hasil-reward">
+        <span class="reward-pill reward-xp">+${xp} XP</span>
+        ${coins>0?`<span class="reward-pill reward-coins">+${coins} 🪙</span>`:''}
+      </div>
+      ${hasilData?.badge_baru?.length?`
+        <div style="font-size:13px;color:var(--yellow);margin-bottom:12px;">
+          🏅 Badge baru: ${hasilData.badge_baru.map(b=>`${b.ikon} ${escHtml(b.nama)}`).join(", ")}
+        </div>`:''}
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="window.location.href='friends.html'">Duel Lagi ⚔️</button>
+        <button class="btn-secondary" onclick="document.getElementById('hasilPopup').remove()">Lihat Detail</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+}
+
+// ════════════════════════════════════════
+// TERIMA / TOLAK dari halaman duel
+// ════════════════════════════════════════
+async function terimaDuelPage(){
+  const params = new URLSearchParams(window.location.search);
+  const matchId = parseInt(params.get("id"));
+  try {
+    const res  = await fetch(`${API}/duel/terima/${matchId}`, {method:"POST",headers:authHeaders()});
+    const data = await res.json();
+    if(!res.ok){ tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("⚔️ Duel dimulai!","success");
+    await muatDuel(matchId);
+  } catch(e){ tampilToast("Gagal terhubung","error"); }
+}
+
+async function tolakDuelPage(){
+  const params = new URLSearchParams(window.location.search);
+  const matchId = parseInt(params.get("id"));
+  try {
+    const res  = await fetch(`${API}/duel/tolak/${matchId}`, {method:"POST",headers:authHeaders()});
+    const data = await res.json();
+    if(!res.ok){ tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("Tantangan ditolak","info");
+    setTimeout(()=>window.location.href="duel.html",1200);
+  } catch(e){ tampilToast("Gagal terhubung","error"); }
+}
+
+// ════════════════════════════════════════
+// HELPER
+// ════════════════════════════════════════
+function handleTab(e){
+  if(e.key==="Tab"){
+    e.preventDefault();
+    const t=e.target, s=t.selectionStart;
+    t.value=t.value.substring(0,s)+"    "+t.value.substring(t.selectionEnd);
+    t.selectionStart=t.selectionEnd=s+4;
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){ e.preventDefault(); jalankanKode(); }
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JastCodeLab — Belajar Python</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    /* CSS vars */
+    :root {
+      --bg:#080c14;--bg2:#0d1220;--bg3:#111827;--bgcard:#111827;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+      --blue:#4f8ef7;--green:#34d399;--orange:#fb923c;--purple:#a78bfa;
+      --red:#f87171;--yellow:#fbbf24;
+      --txt:#e8edf8;--txt2:#8b95b0;--txt3:#4a5472;
+      --fn-display:'Syne',sans-serif;--fn-mono:'JetBrains Mono',monospace;
+      --fn-body:'DM Sans',sans-serif;--t:.18s ease;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--txt);font-family:var(--fn-body);font-size:15px;line-height:1.6;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:none}
+    button{font-family:var(--fn-body)}
+
+    /* ── SIDEBAR ── */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none;backdrop-filter:blur(2px);}
+    .sidebar-overlay.show{display:block;}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+    .sidebar.hidden{transform:translateX(-100%);}
+    .main-area{margin-left:220px;transition:margin .28s cubic-bezier(.4,0,.2,1);}
+    .main-area.full{margin-left:0;}
+
+    .sb-logo{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .sb-logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--fn-mono);font-size:11px;font-weight:700;color:#fff;}
+    .logo-text{font-family:var(--fn-display);font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-.3px;}
+    .close-btn{background:none;border:none;cursor:pointer;color:var(--txt3);padding:4px;border-radius:5px;display:none;}
+    .close-btn:hover{color:var(--txt);background:rgba(255,255,255,.07);}
+
+    .sb-nav{flex:1;padding:10px;overflow-y:auto;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--txt2);transition:all .15s;text-decoration:none;margin-bottom:2px;border:1px solid transparent;}
+    .nav-item:hover{background:rgba(255,255,255,.05);color:var(--txt);}
+    .nav-item.active{background:rgba(79,142,247,.12);color:var(--blue);border-color:rgba(79,142,247,.25);}
+    .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+
+    /* Nav section divider */
+    .nav-divider{height:1px;background:var(--border);margin:6px 4px;}
+
+    .sb-bottom{padding:10px;border-top:1px solid var(--border);flex-shrink:0;}
+    .streak-wrap{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);margin-bottom:6px;}
+    .streak-days{font-family:var(--fn-display);font-size:14px;font-weight:800;color:var(--orange);line-height:1;}
+    .streak-lbl{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);}
+    .sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:6px;}
+    .sb-user:hover{background:rgba(255,255,255,.05);}
+    .avatar-sm{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+    .sb-username{font-size:13px;font-weight:500;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .btn-danger-sm{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%;transition:all .15s;}
+    .btn-danger-sm:hover{background:rgba(248,113,113,.22);}
+
+    /* ── TOPBAR ── */
+    .topbar{position:sticky;top:0;height:54px;background:rgba(8,12,20,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;}
+    .topbar-title{font-size:14px;color:var(--txt2);flex:1;}
+    .topbar-right{display:flex;align-items:center;gap:10px;}
+    .xp-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2);}
+    .coins-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+    .menu-toggle{background:none;border:none;cursor:pointer;color:var(--txt2);padding:6px;border-radius:7px;display:flex;align-items:center;transition:all var(--t);}
+    .menu-toggle:hover{background:rgba(255,255,255,.07);color:var(--txt);}
+
+    /* ── HERO ── */
+    .hero-wrap{display:flex;align-items:center;gap:40px;padding:48px 36px 36px;min-height:calc(100vh - 54px);border-bottom:1px solid var(--border);}
+    .hero-left{flex:1;}
+    .hero-right{flex:0 0 420px;}
+    .hero-tag{display:inline-flex;align-items:center;gap:7px;font-family:var(--fn-mono);font-size:11px;color:var(--green);background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px;}
+    .green-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero-title{font-family:var(--fn-display);font-size:clamp(32px,4.5vw,60px);font-weight:800;letter-spacing:-2.5px;line-height:1.05;margin-bottom:16px;}
+    .hero-title em{font-style:normal;color:var(--blue);}
+    .hero-sub{font-size:15px;color:var(--txt2);line-height:1.7;margin-bottom:28px;max-width:460px;}
+    .hero-btns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px;}
+    .hero-stats{display:flex;align-items:center;gap:24px;}
+    .hstat-n{font-family:var(--fn-display);font-size:26px;font-weight:800;letter-spacing:-1px;}
+    .hstat-l{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);text-transform:uppercase;letter-spacing:1px;}
+    .hstat-div{width:1px;height:30px;background:var(--border);}
+
+    /* Code window */
+    .code-win{background:#0d1220;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+    .code-win-bar{display:flex;align-items:center;gap:5px;padding:10px 14px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);}
+    .dot-r{color:#ff5f57;font-size:11px;}.dot-y{color:#febc2e;font-size:11px;}.dot-g{color:#28c840;font-size:11px;}
+    .code-fn{font-family:var(--fn-mono);font-size:10px;color:var(--txt3);margin-left:6px;}
+    .code-body{padding:20px;font-family:var(--fn-mono);font-size:12.5px;line-height:1.8;overflow-x:auto;}
+    .code-out{padding:12px 20px;background:rgba(0,0,0,.35);border-top:1px solid var(--border);}
+    .code-out-lbl{font-family:var(--fn-mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:5px;font-weight:600;}
+    .code-out pre{font-family:var(--fn-mono);font-size:12px;color:var(--txt2);line-height:1.7;}
+    .kw{color:#c792ea;}.fn{color:#82aaff;}.st{color:#c3e88d;}.cm{color:#546e7a;font-style:italic;}.nm{color:#f78c6c;}.vr{color:#89ddff;}
+
+    /* ── QUICK CARDS ── */
+    .section-wrap{padding:36px;border-bottom:1px solid var(--border);}
+    .sec-title{font-family:var(--fn-display);font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:20px;}
+    .quick-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
+    .quick-scroll::-webkit-scrollbar{height:4px;}
+    .quick-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+    .qcard{flex:0 0 200px;scroll-snap-align:start;background:var(--bgcard);border:1px solid var(--border);border-radius:12px;padding:22px 18px;cursor:pointer;transition:all .25s;text-decoration:none;display:block;}
+    .qcard:hover{transform:translateY(-3px);border-color:var(--border2);box-shadow:0 10px 30px rgba(0,0,0,.3);}
+    .qcard-icon{font-size:24px;margin-bottom:12px;}
+    .qcard-title{font-family:var(--fn-display);font-size:15px;font-weight:700;margin-bottom:6px;letter-spacing:-.3px;}
+    .qcard-desc{font-size:12px;color:var(--txt2);line-height:1.5;}
+    .qcard-arrow{margin-top:16px;font-size:13px;color:var(--txt3);}
+
+    /* ── LESSON CARDS ── */
+    .lessons-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
+    .lessons-scroll::-webkit-scrollbar{height:4px;}
+    .lessons-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+    .lcard{flex:0 0 200px;scroll-snap-align:start;background:var(--bgcard);border:1px solid var(--border);border-radius:10px;padding:18px 16px;text-decoration:none;display:block;transition:all .25s;}
+    .lcard:hover{border-color:rgba(79,142,247,.3);transform:translateY(-2px);}
+    .lcard-num{font-family:var(--fn-mono);font-size:10px;color:var(--txt3);margin-bottom:6px;}
+    .lcard-title{font-family:var(--fn-display);font-size:14px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px;}
+    .lcard-desc{font-size:11.5px;color:var(--txt2);line-height:1.5;}
+    .lcard-xp{margin-top:12px;}
+
+    /* ── KOMUNITAS PREVIEW ── */
+    .post-preview{background:var(--bgcard);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;transition:border-color .2s;cursor:pointer;}
+    .post-preview:hover{border-color:var(--border2);}
+    .pp-header{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+    .pp-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+    .pp-author{font-size:13px;font-weight:600;}
+    .pp-time{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);}
+    .pp-title{font-family:var(--fn-display);font-size:14px;font-weight:700;margin-bottom:5px;letter-spacing:-.2px;}
+    .pp-body{font-size:12.5px;color:var(--txt2);line-height:1.6;}
+    .pp-footer{display:flex;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+    .pp-stat{font-size:11px;color:var(--txt3);}
+
+    /* ── BTNS ── */
+    .btn-primary{display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:#fff;font-family:var(--fn-display);font-size:14px;font-weight:700;padding:11px 24px;border-radius:8px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;}
+    .btn-primary:hover{background:#3a7de8;transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,142,247,.3);}
+    .btn-outline{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--txt2);font-size:14px;font-weight:500;padding:11px 20px;border-radius:8px;border:1px solid var(--border2);cursor:pointer;transition:all .2s;text-decoration:none;}
+    .btn-outline:hover{color:var(--txt);border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04);}
+
+    /* ── PILL ── */
+    .pill{display:inline-block;font-family:var(--fn-mono);font-size:9px;text-transform:uppercase;letter-spacing:.8px;padding:3px 9px;border-radius:100px;}
+    .pill-blue{background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.25);}
+    .pill-green{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2);}
+    .pill-orange{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2);}
+    .pill-red{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+
+    /* ── SKELETON ── */
+    .skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+    @keyframes shimmer{to{background-position:-200% 0}}
+
+    /* ── TOAST ── */
+    #toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+    @keyframes fadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes blink2{0%,100%{opacity:1}50%{opacity:0}}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){.hero-right{display:none;}.hero-wrap{min-height:auto;padding:32px 24px;}}
+    @media(max-width:768px){
+      .main-area{margin-left:0!important;}
+      .sidebar{transform:translateX(-100%);}
+      .sidebar.show{transform:translateX(0);}
+      .close-btn{display:flex;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="tutupSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html" class="sb-logo-link">
+      <div class="logo-icon">&lt;/&gt;</div>
+      <span class="logo-text">JCL</span>
+    </a>
+    <button class="close-btn" id="closeSidebarBtn" onclick="tutupSidebar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <ul class="sb-nav">
+    <!-- Navigasi Utama -->
+    <li><a href="index.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Beranda
+    </a></li>
+    <li><a href="learn.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      Belajar
+    </a></li>
+    <li><a href="daily.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      Daily Challenge
+    </a></li>
+    <li><a href="runner.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Kode Runner
+    </a></li>
+    <li><a href="challenges.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Tantangan
+    </a></li>
+    <li><a href="community.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Komunitas
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Sosial & Toko -->
+    <li><a href="friends.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Teman
+    </a></li>
+    <li><a href="shop.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Shop
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Akun -->
+    <li id="navLoginLi"><a href="login.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Masuk
+    </a></li>
+    <li id="navProfilLi" style="display:none;"><a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profil Saya
+    </a></li>
+  </ul>
+
+  <div class="sb-bottom">
+    <div class="streak-wrap" id="streakWrap" style="display:none;">
+      <span style="font-size:18px;">🔥</span>
+      <div>
+        <div class="streak-days" id="navStreak">0 Hari</div>
+        <div class="streak-lbl">Streak Aktif</div>
+      </div>
+    </div>
+    <div class="sb-user" onclick="window.location.href='profile.html'">
+      <div class="avatar-sm" id="navAvatar">?</div>
+      <span class="sb-username" id="navUsername">Guest</span>
+    </div>
+    <button class="btn-danger-sm" id="navLogoutBtn" style="display:none;" onclick="logout()">Keluar</button>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN AREA ═══════════ -->
+<div class="main-area" id="mainArea">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="topbar-title" id="topbarTitle">Selamat datang di JastCodeLab</div>
+    <div class="topbar-right">
+      <span class="coins-badge" id="navCoins" style="display:none;">🪙 0</span>
+      <span class="xp-badge" id="navXP">⚡ 0 XP</span>
+      <div class="avatar-sm" id="topbarAvatar" style="cursor:pointer;width:32px;height:32px;font-size:13px;" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </header>
+
+  <!-- ── HERO ── -->
+  <section class="hero-wrap">
+    <div class="hero-left">
+      <div class="hero-tag">
+        <span class="green-dot"></span>
+        Platform Aktif · Python Learning
+      </div>
+      <h1 class="hero-title">
+        Belajar Python<br/>dengan <em>Cara Seru</em>
+      </h1>
+      <p class="hero-sub">
+        Pelajari konsep, jalankan kode di browser, selesaikan tantangan,
+        dan bergabung dengan komunitas developer Indonesia.
+      </p>
+
+      <!-- Guest banner -->
+      <div id="guestBanner" style="display:none;background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="font-size:13px;color:var(--txt2);">🔒 Login untuk akses semua fitur dan simpan progres belajarmu.</span>
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <a href="login.html" class="btn-outline" style="font-size:12px;padding:6px 14px;">Masuk</a>
+          <a href="register.html" class="btn-primary" style="font-size:12px;padding:6px 14px;">Daftar</a>
+        </div>
+      </div>
+
+      <div class="hero-btns">
+        <a href="learn.html" class="btn-primary">Mulai Belajar</a>
+        <a href="runner.html" class="btn-outline">Coba Kode Runner</a>
+      </div>
+
+      <div class="hero-stats">
+        <div><div class="hstat-n">12</div><div class="hstat-l">Topik</div></div>
+        <div class="hstat-div"></div>
+        <div><div class="hstat-n">48</div><div class="hstat-l">Tantangan</div></div>
+        <div class="hstat-div"></div>
+        <div><div class="hstat-n">Gratis</div><div class="hstat-l">Selamanya</div></div>
+      </div>
+    </div>
+
+    <!-- Code window -->
+    <div class="hero-right">
+      <div class="code-win">
+        <div class="code-win-bar">
+          <span class="dot-r">●</span><span class="dot-y">●</span><span class="dot-g">●</span>
+          <span class="code-fn">latihan.py</span>
+        </div>
+        <div class="code-body"><pre><span class="kw">def</span> <span class="fn">hitung_luas</span>(panjang, lebar):
+    <span class="kw">return</span> panjang * lebar
+
+<span class="cm"># Hitung beberapa persegi panjang</span>
+ukuran = [(<span class="nm">5</span>,<span class="nm">3</span>), (<span class="nm">8</span>,<span class="nm">4</span>), (<span class="nm">10</span>,<span class="nm">6</span>)]
+
+<span class="kw">for</span> p, l <span class="kw">in</span> ukuran:
+    luas = hitung_luas(p, l)
+    <span class="fn">print</span>(<span class="st">f"</span><span class="vr">{p}</span><span class="st">×</span><span class="vr">{l}</span><span class="st"> = </span><span class="vr">{luas}</span><span class="st"> m²"</span>)</pre></div>
+        <div class="code-out">
+          <div class="code-out-lbl">▶ Output</div>
+          <pre>5×3 = 15 m²
+8×4 = 32 m²
+<span style="color:#89ddff;">10×6 = 60 m²<span style="animation:blink2 1s step-end infinite;">|</span></span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── QUICK ACCESS ── -->
+  <div class="section-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div class="sec-title">Mulai Dari Mana?</div>
+      <span style="font-size:12px;color:var(--txt3);font-family:var(--fn-mono);">← scroll →</span>
+    </div>
+    <div class="quick-scroll">
+      <a href="learn.html" class="qcard" style="border-top:3px solid var(--blue);">
+        <div class="qcard-icon">📚</div>
+        <div class="qcard-title">Modul Belajar</div>
+        <div class="qcard-desc">Topik Python dari dasar hingga OOP, dengan contoh kode interaktif.</div>
+        <div class="qcard-arrow">Mulai belajar →</div>
+      </a>
+      <a href="daily.html" class="qcard" style="border-top:3px solid var(--yellow);">
+        <div class="qcard-icon">☀️</div>
+        <div class="qcard-title">Daily Challenge</div>
+        <div class="qcard-desc">Soal baru setiap hari. Kerjakan dan dapatkan bonus XP + Coins ekstra.</div>
+        <div class="qcard-arrow">Kerjakan hari ini →</div>
+      </a>
+      <a href="runner.html" class="qcard" style="border-top:3px solid var(--green);">
+        <div class="qcard-icon">⚡</div>
+        <div class="qcard-title">Kode Runner</div>
+        <div class="qcard-desc">Tulis & jalankan Python langsung di browser. Tidak perlu install apapun.</div>
+        <div class="qcard-arrow">Coba sekarang →</div>
+      </a>
+      <a href="challenges.html" class="qcard" style="border-top:3px solid var(--orange);">
+        <div class="qcard-icon">⚔️</div>
+        <div class="qcard-title">Tantangan</div>
+        <div class="qcard-desc">Soal coding dari mudah hingga sulit. Kerjakan dan dapatkan XP + Coins.</div>
+        <div class="qcard-arrow">Lihat tantangan →</div>
+      </a>
+      <a href="friends.html" class="qcard" style="border-top:3px solid var(--purple);">
+        <div class="qcard-icon">👥</div>
+        <div class="qcard-title">Teman</div>
+        <div class="qcard-desc">Tambah teman, tantang duel 1v1, dan lihat leaderboard khusus temanmu.</div>
+        <div class="qcard-arrow">Cari teman →</div>
+      </a>
+      <a href="shop.html" class="qcard" style="border-top:3px solid var(--yellow);">
+        <div class="qcard-icon">🛍️</div>
+        <div class="qcard-title">Shop</div>
+        <div class="qcard-desc">Tukarkan coins dengan gelar eksklusif untuk tampilkan di profilmu.</div>
+        <div class="qcard-arrow">Buka toko →</div>
+      </a>
+      <a href="community.html" class="qcard" style="border-top:3px solid #a78bfa;">
+        <div class="qcard-icon">💬</div>
+        <div class="qcard-title">Komunitas</div>
+        <div class="qcard-desc">Bagikan kode, tanya jawab, dan belajar bersama developer lain.</div>
+        <div class="qcard-arrow">Gabung komunitas →</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── PELAJARAN PREVIEW ── -->
+  <div class="section-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div class="sec-title">Topik Pelajaran</div>
+      <a href="learn.html" style="font-size:13px;color:var(--blue);">Lihat semua →</a>
+    </div>
+    <div class="lessons-scroll" id="lessonScroll">
+      <div class="skel" style="flex:0 0 200px;height:120px;border-radius:10px;"></div>
+      <div class="skel" style="flex:0 0 200px;height:120px;border-radius:10px;"></div>
+      <div class="skel" style="flex:0 0 200px;height:120px;border-radius:10px;"></div>
+      <div class="skel" style="flex:0 0 200px;height:120px;border-radius:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ── KOMUNITAS PREVIEW ── -->
+  <div class="section-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div class="sec-title">Postingan Komunitas Terbaru</div>
+      <a href="community.html" style="font-size:13px;color:var(--blue);">Lihat semua →</a>
+    </div>
+    <div id="communityPreview">
+      <div class="skel" style="height:100px;border-radius:10px;margin-bottom:10px;"></div>
+      <div class="skel" style="height:100px;border-radius:10px;"></div>
+    </div>
+  </div>
+
+</div><!-- /main-area -->
+<div id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+
+// ════════════════════════════════════════
+// SIDEBAR — selalu terbuka di desktop
+// ════════════════════════════════════════
+let sidebarOpen = true;
+
+function toggleSidebar() {
+  if (window.innerWidth > 768) return; // desktop: tidak bisa tutup
+  sidebarOpen = !sidebarOpen;
+  applySidebar();
+}
+
+function tutupSidebar() {
+  if (window.innerWidth > 768) return; // desktop: tidak bisa tutup
+  sidebarOpen = false;
+  applySidebar();
+}
+
+function applySidebar() {
+  const sb  = document.getElementById("sidebar");
+  const ma  = document.getElementById("mainArea");
+  const ov  = document.getElementById("overlay");
+  const mob = window.innerWidth <= 768;
+
+  if (!mob) {
+    // Desktop: selalu terbuka
+    sb.classList.remove("hidden");
+    sb.classList.add("show");
+    ov.classList.remove("show");
+    ma.classList.remove("full");
+    ma.style.marginLeft = "220px";
+    // Sembunyikan tombol X di desktop
+    document.getElementById("closeSidebarBtn").style.display = "none";
+  } else {
+    // Mobile: bisa toggle
+    document.getElementById("closeSidebarBtn").style.display = "flex";
+    if (sidebarOpen) {
+      sb.classList.remove("hidden");
+      sb.classList.add("show");
+      ov.classList.add("show");
+      ma.classList.add("full");
+    } else {
+      sb.classList.add("hidden");
+      sb.classList.remove("show");
+      ov.classList.remove("show");
+      ma.classList.remove("full");
+    }
+  }
+}
+
+window.addEventListener("resize", applySidebar);
+
+// ════════════════════════════════════════
+// UPDATE NAV USER
+// ════════════════════════════════════════
+function updateNavUser() {
+  const user     = getUser();
+  const loggedIn = sudahLogin();
+
+  // Guest banner
+  const banner = document.getElementById("guestBanner");
+  if (banner) banner.style.display = loggedIn ? "none" : "flex";
+
+  // Nav items
+  document.getElementById("navLoginLi").style.display   = loggedIn ? "none" : "";
+  document.getElementById("navProfilLi").style.display  = loggedIn ? "" : "none";
+  document.getElementById("navLogoutBtn").style.display = loggedIn ? "" : "none";
+
+  if (!user) return;
+
+  document.getElementById("navUsername").textContent   = user.username;
+  document.getElementById("navStreak").textContent     = `${user.streak_days ?? 0} Hari`;
+  document.getElementById("navXP").textContent         = `⚡ ${user.xp ?? 0} XP`;
+
+  const navCoins = document.getElementById("navCoins");
+  if (navCoins) {
+    navCoins.textContent  = `🪙 ${user.coins ?? 0}`;
+    navCoins.style.display = loggedIn ? "" : "none";
+  }
+
+  const streakWrap = document.getElementById("streakWrap");
+  if (streakWrap) streakWrap.style.display = (user.streak_days > 0) ? "flex" : "none";
+
+  const inisial = user.username.charAt(0).toUpperCase();
+  document.getElementById("navAvatar").textContent    = inisial;
+  document.getElementById("topbarAvatar").textContent = inisial;
+  document.getElementById("topbarTitle").textContent  = `Selamat datang, ${user.username}! 👋`;
+}
+
+// ════════════════════════════════════════
+// MUAT PELAJARAN PREVIEW
+// ════════════════════════════════════════
+async function muatLessonPreview() {
+  try {
+    const lessons = await ApiLesson.getDaftar();
+    const el = document.getElementById("lessonScroll");
+    el.innerHTML = lessons.slice(0, 8).map(l => `
+      <a href="learn.html" class="lcard">
+        <div class="lcard-num">#${String(l.urutan).padStart(2,"0")}</div>
+        <div class="lcard-title">${escHtml(l.judul)}</div>
+        <div class="lcard-desc">${escHtml(l.deskripsi||"").substring(0,60)}...</div>
+        <div class="lcard-xp">
+          <span class="pill pill-blue">+${l.xp_reward} XP</span>
+          ${l.selesai ? '<span class="pill pill-green" style="margin-left:4px;">✓</span>' : ""}
+          ${l.terkunci ? '<span class="pill pill-red" style="margin-left:4px;">🔒</span>' : ""}
+        </div>
+      </a>
+    `).join("");
+  } catch(e) {
+    document.getElementById("lessonScroll").innerHTML =
+      `<p style="color:var(--txt3);font-size:13px;padding:12px;">Gagal memuat pelajaran.</p>`;
+  }
+}
+
+// ════════════════════════════════════════
+// MUAT KOMUNITAS PREVIEW
+// ════════════════════════════════════════
+async function muatCommunityPreview() {
+  try {
+    const result = await ApiPost.daftar(1);
+    const el = document.getElementById("communityPreview");
+    if (!result.posts || result.posts.length === 0) {
+      el.innerHTML = `<p style="color:var(--txt3);font-size:13px;padding:12px;text-align:center;">Belum ada postingan. <a href="community.html" style="color:var(--blue);">Jadi yang pertama!</a></p>`;
+      return;
+    }
+    el.innerHTML = result.posts.slice(0,3).map(p => `
+      <div class="post-preview" onclick="window.location.href='community.html'">
+        <div class="pp-header">
+          <div class="pp-avatar" style="background:${warnaDariNama(p.penulis)};">${p.penulis.charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="pp-author">${escHtml(p.penulis)}</div>
+            <div class="pp-time">${formatTanggal(p.created_at)}</div>
+          </div>
+        </div>
+        <div class="pp-title">${escHtml(p.judul)}</div>
+        <div class="pp-body">${escHtml(p.konten||"").substring(0,100)}${(p.konten||"").length>100?"...":""}</div>
+        <div class="pp-footer">
+          <span class="pp-stat">💬 ${p.jumlah_komentar} komentar</span>
+          <span class="pp-stat">👍 ${p.jumlah_like} suka</span>
+        </div>
+      </div>
+    `).join("");
+  } catch(e) {
+    document.getElementById("communityPreview").innerHTML =
+      `<p style="color:var(--txt3);font-size:13px;padding:12px;text-align:center;">Gagal memuat komunitas.</p>`;
+  }
+}
+
+// ════════════════════════════════════════
+// HELPER
+// ════════════════════════════════════════
+function warnaDariNama(str) {
+  const p=["linear-gradient(135deg,#6366f1,#8b5cf6)","linear-gradient(135deg,#10b981,#059669)","linear-gradient(135deg,#f59e0b,#d97706)","linear-gradient(135deg,#3b82f6,#2563eb)","linear-gradient(135deg,#ec4899,#db2777)"];
+  let h=0; for(const c of str) h=(h*31+c.charCodeAt(0))%p.length; return p[h];
+}
+function escHtml(s) {
+  return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function formatTanggal(iso) {
+  if(!iso) return "";
+  try {
+    const d=new Date(iso.replace(" ","T")),now=new Date();
+    const s=Math.floor((now-d)/1000);
+    if(s<60) return "baru saja";
+    if(s<3600) return `${Math.floor(s/60)} menit lalu`;
+    if(s<86400) return `${Math.floor(s/3600)} jam lalu`;
+    return `${Math.floor(s/86400)} hari lalu`;
+  } catch { return iso; }
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", async () => {
+  // Init sidebar — desktop selalu buka
+  sidebarOpen = window.innerWidth > 768;
+  applySidebar();
+
+  updateNavUser();
+
+  // Refresh profil dari server jika login
+  if (sudahLogin()) {
+    try {
+      const profil = await ApiUser.getProfil();
+      if (typeof updateUserStats === "function") updateUserStats(profil.xp, profil.streak_days);
+      updateNavUser();
+    } catch(_) {}
+  }
+
+  await muatLessonPreview();
+  await muatCommunityPreview();
+});
+</script>
+</body>
+</html>

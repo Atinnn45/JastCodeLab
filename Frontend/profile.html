@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Profil Saya — JastCodeLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+:root {
+  --bg:#080c14;--bg2:#0d1220;--bg3:#111827;--bgcard:#111827;--bgcard2:#161e2e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --blue:#4f8ef7;--green:#34d399;--orange:#fb923c;--purple:#a78bfa;
+  --red:#f87171;--yellow:#fbbf24;
+  --txt:#e8edf8;--txt2:#8b95b0;--txt3:#4a5472;
+  --fn-display:'Syne',sans-serif;--fn-mono:'JetBrains Mono',monospace;
+  --fn-body:'DM Sans',sans-serif;
+  --sb-w:220px;--tb-h:54px;--rad:10px;--rad-lg:16px;--t:.18s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:var(--fn-body);font-size:15px;line-height:1.6;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}ul{list-style:none;}button{font-family:var(--fn-body);}
+
+/* ══════════════════════════════════════════
+   SIDEBAR — identik dengan index.html
+══════════════════════════════════════════ */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none;backdrop-filter:blur(2px);}
+.sidebar-overlay.show{display:block;}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.sidebar.hidden{transform:translateX(-100%);}
+.main-area{margin-left:220px;transition:margin .28s cubic-bezier(.4,0,.2,1);min-height:100vh;}
+.main-area.full{margin-left:0;}
+
+.sb-logo{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--fn-mono);font-size:11px;font-weight:700;color:#fff;}
+.logo-text{font-family:var(--fn-display);font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-.3px;}
+.close-btn{background:none;border:none;cursor:pointer;color:var(--txt3);padding:4px;border-radius:5px;display:none;}
+.close-btn:hover{color:var(--txt);background:rgba(255,255,255,.07);}
+
+.sb-nav{flex:1;padding:10px;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--txt2);transition:all .15s;text-decoration:none;margin-bottom:2px;border:1px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--txt);}
+.nav-item.active{background:rgba(79,142,247,.12);color:var(--blue);border-color:rgba(79,142,247,.25);}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;}
+.nav-divider{height:1px;background:var(--border);margin:6px 4px;}
+
+.sb-bottom{padding:10px;border-top:1px solid var(--border);flex-shrink:0;}
+.streak-wrap{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);margin-bottom:6px;}
+.streak-days{font-family:var(--fn-display);font-size:14px;font-weight:800;color:var(--orange);line-height:1;}
+.streak-lbl{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);}
+.sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:6px;}
+.sb-user:hover{background:rgba(255,255,255,.05);}
+.avatar-sm{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.sb-username{font-size:13px;font-weight:500;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btn-danger-sm{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%;transition:all .15s;}
+.btn-danger-sm:hover{background:rgba(248,113,113,.22);}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;height:54px;background:rgba(8,12,20,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;}
+.topbar-title{font-size:14px;color:var(--txt2);flex:1;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.xp-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2);}
+.coins-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+.menu-toggle{background:none;border:none;cursor:pointer;color:var(--txt2);padding:6px;border-radius:7px;display:flex;align-items:center;transition:all var(--t);}
+.menu-toggle:hover{background:rgba(255,255,255,.07);color:var(--txt);}
+
+/* ── PROFIL HERO ── */
+.page-content{padding:24px;}
+.profile-hero{background:linear-gradient(135deg,var(--bg2),var(--bgcard2));border:1px solid var(--border);border-radius:18px;padding:32px;margin-bottom:20px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden;}
+.profile-hero::before{content:'';position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(79,142,247,.07),transparent 70%);top:-80px;right:-60px;pointer-events:none;}
+.profile-avatar-big{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-family:var(--fn-display);font-size:32px;font-weight:800;color:#fff;border:3px solid rgba(79,142,247,.3);box-shadow:0 0 0 6px rgba(79,142,247,.07);flex-shrink:0;}
+.profile-info{flex:1;min-width:0;}
+.profile-name{font-family:var(--fn-display);font-size:26px;font-weight:800;letter-spacing:-.8px;margin-bottom:4px;}
+.profile-title-tag{display:inline-block;font-family:var(--fn-mono);font-size:11px;font-weight:700;padding:3px 12px;border-radius:100px;background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3);margin-bottom:8px;}
+.profile-joined{font-size:12px;color:var(--txt3);font-family:var(--fn-mono);margin-bottom:10px;}
+.profile-badges-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.profile-badge-icons{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.profile-badge-icon{font-size:1.4rem;cursor:default;transition:transform .15s;}
+.profile-badge-icon:hover{transform:scale(1.2);}
+.profile-xp-col{text-align:right;flex-shrink:0;min-width:200px;}
+.profile-xp-num{font-family:var(--fn-display);font-size:40px;font-weight:800;color:var(--blue);letter-spacing:-2px;line-height:1;}
+.profile-xp-lbl{font-family:var(--fn-mono);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.profile-coins-row{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-bottom:10px;}
+.profile-coins-num{font-family:var(--fn-display);font-size:18px;font-weight:800;color:var(--yellow);}
+.profile-coins-lbl{font-family:var(--fn-mono);font-size:10px;color:var(--txt3);}
+.xp-prog-wrap{margin-top:4px;}
+.level-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--fn-mono);font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:linear-gradient(135deg,rgba(79,142,247,.15),rgba(167,139,250,.15));border:1px solid rgba(79,142,247,.3);color:var(--blue);margin-bottom:7px;}
+.xp-prog-bar-outer{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;width:200px;margin:0 0 4px auto;}
+.xp-prog-bar-inner{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width 1s ease;}
+.xp-prog-label{font-family:var(--fn-mono);font-size:10px;color:var(--txt3);text-align:right;}
+
+/* ── SHOP BANNER ── */
+.shop-banner{background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(251,146,60,.05));border:1px solid rgba(251,191,36,.2);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;}
+.shop-banner:hover{border-color:rgba(251,191,36,.4);transform:translateY(-1px);box-shadow:0 4px 20px rgba(251,191,36,.1);}
+.shop-banner-icon{font-size:2rem;flex-shrink:0;}
+.shop-banner-info{flex:1;}
+.shop-banner-title{font-family:var(--fn-display);font-size:15px;font-weight:700;color:var(--yellow);margin-bottom:2px;}
+.shop-banner-desc{font-size:12px;color:var(--txt2);}
+.shop-banner-arrow{font-size:1.3rem;color:var(--yellow);flex-shrink:0;}
+
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-box{background:var(--bgcard2);border:1px solid var(--border);border-radius:12px;padding:20px 16px;text-align:center;transition:border-color var(--t),transform var(--t);}
+.stat-box:hover{border-color:var(--border2);transform:translateY(-2px);}
+.stat-box-icon{font-size:22px;margin-bottom:8px;}
+.stat-box-n{font-family:var(--fn-display);font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:4px;}
+.stat-box-l{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);text-transform:uppercase;letter-spacing:.8px;}
+
+/* ── GRID 2 KOLOM ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.section-card{background:var(--bgcard);border:1px solid var(--border);border-radius:var(--rad-lg);padding:22px;}
+.card-title{font-family:var(--fn-display);font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+
+/* ── LEADERBOARD ── */
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;transition:background var(--t);margin-bottom:3px;}
+.lb-row:hover{background:rgba(255,255,255,.03);}
+.lb-row.me{background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);}
+.lb-rank{font-family:var(--fn-mono);font-size:13px;font-weight:700;width:26px;flex-shrink:0;}
+.lb-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-meta{font-family:var(--fn-mono);font-size:10px;color:var(--txt3);}
+.lb-title-tag{font-family:var(--fn-mono);font-size:9px;padding:1px 7px;border-radius:100px;background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2);margin-left:4px;}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+.prog-blue{background:linear-gradient(90deg,var(--blue),#6ab0ff);}
+.prog-orange{background:linear-gradient(90deg,var(--orange),#fdd);}
+.prog-purple{background:linear-gradient(90deg,var(--purple),var(--blue));}
+
+/* ── BADGE LIST ── */
+.badge-grid{display:flex;flex-wrap:wrap;gap:10px;}
+.badge-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:9px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.14);flex:1;min-width:180px;}
+.badge-item-icon{font-size:20px;flex-shrink:0;}
+.badge-item-name{font-size:13px;font-weight:600;}
+.badge-item-desc{font-size:11px;color:var(--txt3);}
+.badge-item-date{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);margin-top:2px;}
+
+/* ── KOLEKSI GELAR ── */
+.koleksi-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.koleksi-item{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-family:var(--fn-mono);font-size:12px;font-weight:600;background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2);cursor:pointer;transition:all .15s;}
+.koleksi-item:hover{background:rgba(167,139,250,.2);}
+.koleksi-item.aktif{background:rgba(167,139,250,.2);border-color:rgba(167,139,250,.5);box-shadow:0 0 12px rgba(167,139,250,.2);}
+.koleksi-item.aktif::before{content:'● ';color:var(--green);}
+
+/* ── PILL ── */
+.pill{display:inline-block;font-family:var(--fn-mono);font-size:9px;text-transform:uppercase;letter-spacing:.8px;padding:3px 9px;border-radius:100px;}
+.pill-blue{background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.25);}
+.pill-green{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2);}
+.pill-orange{background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.2);}
+.pill-yellow{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.2);}
+.pill-purple{background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2);}
+
+/* ── SKELETON ── */
+.skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{to{background-position:-200% 0;}}
+
+#toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+@media(max-width:900px){
+  .grid-2{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .profile-hero{flex-direction:column;text-align:center;}
+  .profile-xp-col{text-align:center;min-width:unset;width:100%;}
+  .xp-prog-bar-outer{margin:0 auto 4px;}
+  .xp-prog-label{text-align:center;}
+  .profile-coins-row{justify-content:center;}
+  .profile-badges-row{justify-content:center;}
+  .profile-badge-icons{justify-content:center;}
+}
+@media(max-width:768px){
+  .main-area{margin-left:0!important;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.show{transform:translateX(0);}
+  .close-btn{display:flex!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="tutupSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR — identik dengan index.html ═══════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html" class="sb-logo-link">
+      <div class="logo-icon">&lt;/&gt;</div>
+      <span class="logo-text">JCL</span>
+    </a>
+    <button class="close-btn" id="closeSidebarBtn" onclick="tutupSidebar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <ul class="sb-nav">
+    <!-- Navigasi Utama -->
+    <li><a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Beranda
+    </a></li>
+    <li><a href="learn.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      Belajar
+    </a></li>
+    <li><a href="daily.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      Daily Challenge
+    </a></li>
+    <li><a href="runner.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Kode Runner
+    </a></li>
+    <li><a href="challenges.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Tantangan
+    </a></li>
+    <li><a href="community.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Komunitas
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Sosial & Toko -->
+    <li><a href="friends.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Teman
+    </a></li>
+    <li><a href="shop.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Shop
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Akun -->
+    <li id="navLoginLi" style="display:none;"><a href="login.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Masuk
+    </a></li>
+    <li id="navProfilLi"><a href="profile.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profil Saya
+    </a></li>
+  </ul>
+
+  <div class="sb-bottom">
+    <div class="streak-wrap" id="streakWrap" style="display:none;">
+      <span style="font-size:18px;">🔥</span>
+      <div>
+        <div class="streak-days" id="navStreak">0 Hari</div>
+        <div class="streak-lbl">Streak Aktif</div>
+      </div>
+    </div>
+    <div class="sb-user" onclick="window.location.href='profile.html'">
+      <div class="avatar-sm" id="navAvatar">?</div>
+      <span class="sb-username" id="navUsername">Guest</span>
+    </div>
+    <button class="btn-danger-sm" id="navLogoutBtn" onclick="logout()">Keluar</button>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main-area" id="mainArea">
+  <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="topbar-title">Profil Saya</div>
+    <div class="topbar-right">
+      <span class="coins-badge" id="navCoins" style="display:none;">🪙 0</span>
+      <span class="xp-badge" id="navXP">⚡ 0 XP</span>
+      <div class="avatar-sm" id="topbarAvatar" style="width:32px;height:32px;font-size:13px;cursor:pointer;" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </header>
+
+  <div class="page-content">
+
+    <!-- PROFIL HERO -->
+    <div class="profile-hero" id="profileHero">
+      <div class="profile-avatar-big" id="profileAvatar">?</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">
+          <div class="skel" style="height:28px;width:160px;"></div>
+        </div>
+        <div id="profileTitleWrap" style="display:none;">
+          <span class="profile-title-tag" id="profileTitleTag"></span>
+        </div>
+        <div class="profile-joined" id="profileJoined">
+          <div class="skel" style="height:14px;width:140px;margin-bottom:10px;"></div>
+        </div>
+        <div class="profile-badges-row" id="profileBadgesRow">
+          <div class="skel" style="height:22px;width:90px;border-radius:100px;"></div>
+          <div class="skel" style="height:22px;width:70px;border-radius:100px;margin-left:6px;"></div>
+        </div>
+        <div class="profile-badge-icons" id="profileBadgeIcons"></div>
+      </div>
+      <div class="profile-xp-col">
+        <div class="profile-xp-num" id="profileXP">0</div>
+        <div class="profile-xp-lbl">Total XP</div>
+        <div class="profile-coins-row">
+          <span style="font-size:1.1rem;">🪙</span>
+          <span class="profile-coins-num" id="profileCoins">0</span>
+          <span class="profile-coins-lbl">Coins</span>
+        </div>
+        <div class="xp-prog-wrap">
+          <div class="level-badge" id="levelBadge">⭐ Level 1</div>
+          <div class="xp-prog-bar-outer">
+            <div class="xp-prog-bar-inner" id="xpBar" style="width:0%;"></div>
+          </div>
+          <div class="xp-prog-label" id="xpBarLabel">0/100 XP ke Level 2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOP BANNER -->
+    <div class="shop-banner" onclick="window.location.href='shop.html'">
+      <div class="shop-banner-icon">🛍️</div>
+      <div class="shop-banner-info">
+        <div class="shop-banner-title">Kunjungi Shop</div>
+        <div class="shop-banner-desc">Tukarkan coins kamu dengan gelar eksklusif</div>
+      </div>
+      <div class="shop-banner-arrow">→</div>
+    </div>
+
+    <!-- STATS GRID -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-box">
+        <div class="stat-box-icon">🔥</div>
+        <div class="stat-box-n" id="statStreak">—</div>
+        <div class="stat-box-l">Hari Streak</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-icon">📚</div>
+        <div class="stat-box-n" id="statLesson">—</div>
+        <div class="stat-box-l">Pelajaran Selesai</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-icon">⚡</div>
+        <div class="stat-box-n" id="statChallenge">—</div>
+        <div class="stat-box-l">Tantangan Selesai</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-icon">🪙</div>
+        <div class="stat-box-n" id="statCoins">—</div>
+        <div class="stat-box-l">Total Coins</div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD + PROGRESS -->
+    <div class="grid-2">
+      <div class="section-card">
+        <div class="card-title"><span>🏆</span> Papan Peringkat</div>
+        <div id="lbList">
+          <div class="skel" style="height:44px;margin-bottom:8px;border-radius:9px;"></div>
+          <div class="skel" style="height:44px;margin-bottom:8px;border-radius:9px;"></div>
+          <div class="skel" style="height:44px;border-radius:9px;"></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="card-title"><span>📈</span> Progress Belajar</div>
+        <div id="progressArea">
+          <div class="skel" style="height:36px;margin-bottom:12px;border-radius:6px;"></div>
+          <div class="skel" style="height:36px;margin-bottom:12px;border-radius:6px;"></div>
+          <div class="skel" style="height:36px;border-radius:6px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BADGE YANG DIMILIKI -->
+    <div class="section-card" style="margin-bottom:16px;">
+      <div class="card-title"><span>🏅</span> Badge Saya</div>
+      <div id="badgeList">
+        <div class="skel" style="height:52px;width:200px;border-radius:9px;display:inline-block;margin-right:10px;"></div>
+        <div class="skel" style="height:52px;width:180px;border-radius:9px;display:inline-block;"></div>
+      </div>
+    </div>
+
+    <!-- KOLEKSI GELAR -->
+    <div class="section-card" id="koleksiCard" style="margin-bottom:16px;display:none;">
+      <div class="card-title" style="justify-content:space-between;">
+        <span><span>🎭</span> Koleksi Gelar</span>
+        <a href="shop.html" style="font-size:12px;color:var(--blue);font-family:var(--fn-mono);">+ Beli lebih →</a>
+      </div>
+      <div class="koleksi-grid" id="koleksiGrid"></div>
+      <div style="margin-top:12px;">
+        <button id="btnLepasTitle" style="display:none;background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:7px 16px;font-size:12px;cursor:pointer;" onclick="lepasTitleAktif()">
+          Lepas Title Aktif
+        </button>
+      </div>
+    </div>
+
+    <!-- ZONA BAHAYA -->
+    <div class="section-card" style="border-color:rgba(248,113,113,.2);">
+      <div class="card-title" style="color:var(--red);"><span>⚠️</span> Zona Bahaya</div>
+      <p style="font-size:13px;color:var(--txt2);margin-bottom:14px;">Tindakan berikut tidak dapat dibatalkan.</p>
+      <button class="btn-danger-sm" onclick="logout()" style="max-width:200px;">Keluar dari Akun</button>
+    </div>
+
+  </div><!-- /page-content -->
+</div><!-- /main-area -->
+
+<div id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+
+const API = "http://127.0.0.1:8000";
+
+/* ════════════════════════════════════════
+   SISTEM LEVEL
+════════════════════════════════════════ */
+const LEVEL_THRESHOLDS = [0, 100, 250, 450, 700, 1000, 1350, 1750, 2200, 2700, 3250];
+
+function hitungLevel(xp) {
+  let level = 1;
+  for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
+    if (xp >= LEVEL_THRESHOLDS[i]) level = i + 1; else break;
+  }
+  return level;
+}
+
+function hitungXPBar(xp) {
+  const level     = hitungLevel(xp);
+  const xpSkrg    = LEVEL_THRESHOLDS[level - 1] ?? 0;
+  const xpBatas   = LEVEL_THRESHOLDS[level]      ?? (xpSkrg + 1000);
+  const xpDiLevel = xp - xpSkrg;
+  const xpBtnLvl  = xpBatas - xpSkrg;
+  const persen    = Math.min(Math.round((xpDiLevel / xpBtnLvl) * 100), 100);
+  return { level, persen, xpDiLevel, xpBtnLvl, levelBerikut: level + 1 };
+}
+
+function labelLevel(level) {
+  if (level >= 10) return "👑 Master";
+  if (level >= 7)  return "💎 Expert";
+  if (level >= 5)  return "🔥 Advanced";
+  if (level >= 3)  return "⚡ Intermediate";
+  return "🌱 Beginner";
+}
+
+/* ════════════════════════════════════════
+   SIDEBAR — identik dengan index.html
+════════════════════════════════════════ */
+let sidebarOpen = true;
+
+function toggleSidebar() {
+  if (window.innerWidth > 768) return;
+  sidebarOpen = !sidebarOpen;
+  applySidebar();
+}
+
+function tutupSidebar() {
+  if (window.innerWidth > 768) return;
+  sidebarOpen = false;
+  applySidebar();
+}
+
+function applySidebar() {
+  const sb  = document.getElementById("sidebar");
+  const ma  = document.getElementById("mainArea");
+  const ov  = document.getElementById("overlay");
+  const mob = window.innerWidth <= 768;
+
+  if (!mob) {
+    sb.classList.remove("hidden"); sb.classList.add("show");
+    ov.classList.remove("show");
+    ma.classList.remove("full");
+    ma.style.marginLeft = "220px";
+    document.getElementById("closeSidebarBtn").style.display = "none";
+  } else {
+    document.getElementById("closeSidebarBtn").style.display = "flex";
+    if (sidebarOpen) {
+      sb.classList.remove("hidden"); sb.classList.add("show");
+      ov.classList.add("show"); ma.classList.add("full");
+    } else {
+      sb.classList.add("hidden"); sb.classList.remove("show");
+      ov.classList.remove("show"); ma.classList.remove("full");
+    }
+  }
+}
+
+window.addEventListener("resize", () => {
+  sidebarOpen = window.innerWidth > 768;
+  applySidebar();
+});
+
+/* ════════════════════════════════════════
+   UPDATE NAV USER — identik dengan index.html
+════════════════════════════════════════ */
+function updateNavUser() {
+  const user     = getUser();
+  const loggedIn = sudahLogin();
+
+  document.getElementById("navLoginLi").style.display   = loggedIn ? "none" : "";
+  document.getElementById("navProfilLi").style.display  = loggedIn ? "" : "none";
+  // navLogoutBtn di profile selalu tampil (halaman ini requireLogin)
+
+  if (!user) return;
+
+  document.getElementById("navUsername").textContent = user.username;
+  document.getElementById("navStreak").textContent   = `${user.streak_days ?? 0} Hari`;
+  document.getElementById("navXP").textContent       = `⚡ ${user.xp ?? 0} XP`;
+
+  const navCoins = document.getElementById("navCoins");
+  if (navCoins) {
+    navCoins.textContent   = `🪙 ${user.coins ?? 0}`;
+    navCoins.style.display = loggedIn ? "" : "none";
+  }
+
+  const streakWrap = document.getElementById("streakWrap");
+  if (streakWrap) streakWrap.style.display = (user.streak_days > 0) ? "flex" : "none";
+
+  const inisial = user.username.charAt(0).toUpperCase();
+  document.getElementById("navAvatar").textContent    = inisial;
+  document.getElementById("topbarAvatar").textContent = inisial;
+}
+
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+function escHtml(s) { return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function tampilToast(pesan, tipe="info", durasi=3500) {
+  const c  = document.getElementById("toastContainer");
+  const el = document.createElement("div");
+  const w  = tipe==="success"?"#34d399":tipe==="error"?"#f87171":tipe==="warning"?"#fb923c":"#4f8ef7";
+  el.style.cssText = `background:#111827;border:1px solid ${w}33;border-left:3px solid ${w};color:${w};padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,.4);animation:fadeIn .2s ease;`;
+  el.textContent = pesan; c.appendChild(el);
+  setTimeout(() => { el.style.opacity="0"; el.style.transition="opacity .3s"; setTimeout(()=>el.remove(),300); }, durasi);
+}
+
+function warnaDariNama(str) {
+  const p=["linear-gradient(135deg,#6366f1,#8b5cf6)","linear-gradient(135deg,#10b981,#059669)","linear-gradient(135deg,#f59e0b,#d97706)","linear-gradient(135deg,#3b82f6,#2563eb)","linear-gradient(135deg,#ec4899,#db2777)"];
+  let h=0; for(const c of str) h=(h*31+c.charCodeAt(0))%p.length; return p[h];
+}
+
+/* ════════════════════════════════════════
+   UPDATE XP BAR
+════════════════════════════════════════ */
+function _updateXPBar(xp) {
+  const info    = hitungXPBar(xp);
+  const levelEl = document.getElementById("levelBadge");
+  if (levelEl) levelEl.textContent = `⭐ Level ${info.level} — ${labelLevel(info.level)}`;
+  const barEl = document.getElementById("xpBar");
+  if (barEl) barEl.style.width = `${info.persen}%`;
+  const labelEl = document.getElementById("xpBarLabel");
+  if (labelEl) labelEl.textContent = `${info.xpDiLevel}/${info.xpBtnLvl} XP ke Level ${info.levelBerikut}`;
+}
+
+/* ════════════════════════════════════════
+   ISI PROFIL DARI CACHE
+════════════════════════════════════════ */
+function _isiProfilDariCache(user) {
+  document.getElementById("profileAvatar").textContent = user.username.charAt(0).toUpperCase();
+  document.getElementById("profileName").textContent   = user.username;
+  document.getElementById("profileXP").textContent     = (user.xp ?? 0).toLocaleString("id-ID");
+  document.getElementById("profileCoins").textContent  = (user.coins ?? 0).toLocaleString("id-ID");
+  document.getElementById("statCoins").textContent     = user.coins ?? 0;
+  _updateXPBar(user.xp ?? 0);
+}
+
+/* ════════════════════════════════════════
+   ISI PROFIL LENGKAP DARI API
+════════════════════════════════════════ */
+function _isiProfilLengkap(profil) {
+  const xp    = profil.xp    ?? 0;
+  const coins = profil.coins ?? 0;
+
+  document.getElementById("profileAvatar").textContent = profil.username.charAt(0).toUpperCase();
+  document.getElementById("profileName").textContent   = profil.username;
+
+  const titleWrap = document.getElementById("profileTitleWrap");
+  const titleTag  = document.getElementById("profileTitleTag");
+  if (profil.active_title) {
+    titleTag.textContent    = `🎭 ${profil.active_title}`;
+    titleWrap.style.display = "block";
+  } else {
+    titleWrap.style.display = "none";
+  }
+
+  const tgl = profil.created_at
+    ? new Date(profil.created_at.replace(" ","T")).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})
+    : "-";
+  document.getElementById("profileJoined").textContent = `Bergabung ${tgl}`;
+
+  document.getElementById("profileXP").textContent    = xp.toLocaleString("id-ID");
+  document.getElementById("profileCoins").textContent = coins.toLocaleString("id-ID");
+  _updateXPBar(xp);
+
+  document.getElementById("statStreak").textContent    = profil.streak_days             ?? 0;
+  document.getElementById("statLesson").textContent    = profil.jumlah_pelajaran_selesai ?? 0;
+  document.getElementById("statChallenge").textContent = profil.jumlah_tantangan_selesai ?? 0;
+  document.getElementById("statCoins").textContent     = coins;
+
+  const info  = hitungXPBar(xp);
+  const pills = [];
+  pills.push({ label:`⭐ Level ${info.level}`, cls:"pill-blue" });
+  if ((profil.streak_days ?? 0) >= 1) pills.push({ label:`🔥 ${profil.streak_days} Hari Streak`, cls:"pill-orange" });
+  if ((profil.jumlah_tantangan_selesai ?? 0) >= 1) pills.push({ label:"⚡ Solver", cls:"pill-yellow" });
+  if (xp >= 500) pills.push({ label:"💎 500 XP", cls:"pill-purple" });
+  if (profil.active_title) pills.push({ label:profil.active_title, cls:"pill-purple" });
+  document.getElementById("profileBadgesRow").innerHTML = pills.map(p=>`<span class="pill ${p.cls}">${p.label}</span>`).join("");
+
+  const iconsEl = document.getElementById("profileBadgeIcons");
+  iconsEl.innerHTML = (profil.badges && profil.badges.length > 0)
+    ? profil.badges.map(b=>`<span class="profile-badge-icon" title="${escHtml(b.nama)}">${b.ikon}</span>`).join("")
+    : "";
+}
+
+/* ════════════════════════════════════════
+   MUAT BADGE
+════════════════════════════════════════ */
+async function _muatBadge(profil) {
+  const el     = document.getElementById("badgeList");
+  const badges = profil.badges || [];
+  if (!badges.length) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--txt3);">Belum ada badge. Selesaikan challenge dan pelajaran untuk mendapatkan badge! 🎯</p>`;
+    return;
+  }
+  el.innerHTML = `<div class="badge-grid">` +
+    badges.map(b => {
+      const tgl = b.earned_at ? new Date(b.earned_at).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"}) : "";
+      return `<div class="badge-item">
+        <span class="badge-item-icon">${b.ikon}</span>
+        <div>
+          <div class="badge-item-name">${escHtml(b.nama)}</div>
+          <div class="badge-item-desc">${escHtml(b.deskripsi||"")}</div>
+          ${tgl?`<div class="badge-item-date">Diraih ${tgl}</div>`:""}
+        </div>
+      </div>`;
+    }).join("") + `</div>`;
+}
+
+/* ════════════════════════════════════════
+   MUAT KOLEKSI GELAR
+════════════════════════════════════════ */
+async function _muatKoleksi() {
+  try {
+    const token = localStorage.getItem("jcl_token");
+    const res   = await fetch(`${API}/shop/koleksi`,{headers:{"Authorization":`Bearer ${token}`}});
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.koleksi || !data.koleksi.length) return;
+    document.getElementById("koleksiCard").style.display = "block";
+    const grid     = document.getElementById("koleksiGrid");
+    const btnLepas = document.getElementById("btnLepasTitle");
+    grid.innerHTML = data.koleksi.map(item => {
+      const isAktif = item.nilai === data.active_title;
+      return `<div class="koleksi-item ${isAktif?"aktif":""}" onclick="pakaiGelar(${item.id},'${escHtml(item.nilai)}')">
+        ${item.ikon} ${escHtml(item.nama)}${isAktif?" ✓":""}
+      </div>`;
+    }).join("");
+    if (data.active_title) btnLepas.style.display = "inline-block";
+  } catch(e) { console.warn("Gagal muat koleksi:", e.message); }
+}
+
+/* ════════════════════════════════════════
+   AKSI: PAKAI GELAR
+════════════════════════════════════════ */
+async function pakaiGelar(id, nilai) {
+  try {
+    const token = localStorage.getItem("jcl_token");
+    const res   = await fetch(`${API}/shop/pakai/${id}`,{method:"POST",headers:{"Authorization":`Bearer ${token}`}});
+    const data  = await res.json();
+    if (!res.ok) { tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast(`🎭 ${data.pesan}`,"success");
+    const titleWrap = document.getElementById("profileTitleWrap");
+    const titleTag  = document.getElementById("profileTitleTag");
+    titleTag.textContent    = `🎭 ${nilai}`;
+    titleWrap.style.display = "block";
+    await _muatKoleksi();
+    document.getElementById("btnLepasTitle").style.display = "inline-block";
+  } catch(e) { tampilToast("Gagal terhubung ke server","error"); }
+}
+
+/* ════════════════════════════════════════
+   AKSI: LEPAS TITLE
+════════════════════════════════════════ */
+async function lepasTitleAktif() {
+  try {
+    const token = localStorage.getItem("jcl_token");
+    const res   = await fetch(`${API}/shop/lepas-title`,{method:"POST",headers:{"Authorization":`Bearer ${token}`}});
+    const data  = await res.json();
+    if (!res.ok) { tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("Title dilepas","info");
+    document.getElementById("profileTitleWrap").style.display = "none";
+    document.getElementById("btnLepasTitle").style.display    = "none";
+    await _muatKoleksi();
+  } catch(e) { tampilToast("Gagal terhubung ke server","error"); }
+}
+
+/* ════════════════════════════════════════
+   LEADERBOARD
+════════════════════════════════════════ */
+async function _muatLeaderboard() {
+  const el = document.getElementById("lbList");
+  try {
+    const data = await ApiUser.getLeaderboard();
+    const user = getUser();
+    el.innerHTML = data.slice(0, 8).map((u, i) => {
+      const ikon = i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
+      const isMe = user && u.id === user.id;
+      const lvl  = hitungLevel(u.xp ?? 0);
+      return `<div class="lb-row ${isMe?"me":""}">
+        <span class="lb-rank" style="color:${i===0?"#fbbf24":i===1?"#8b95b0":i===2?"#fb923c":"#4a5472"}">${ikon}</span>
+        <div class="lb-av" style="background:${warnaDariNama(u.username)};">${u.username.charAt(0).toUpperCase()}</div>
+        <div class="lb-info">
+          <div class="lb-name">
+            ${escHtml(u.username)}
+            ${isMe?'<span style="color:var(--blue);font-size:11px;"> (kamu)</span>':""}
+            ${u.active_title?`<span class="lb-title-tag">${escHtml(u.active_title)}</span>`:""}
+          </div>
+          <div class="lb-meta">${u.xp} XP · Lv.${lvl} · 🔥 ${u.streak_days}h · 🪙 ${u.coins||0}</div>
+        </div>
+      </div>`;
+    }).join("") || `<p style="color:var(--txt3);font-size:13px;">Belum ada data.</p>`;
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--txt3);font-size:13px;">Gagal memuat leaderboard.</p>`;
+  }
+}
+
+/* ════════════════════════════════════════
+   PROGRESS BELAJAR
+════════════════════════════════════════ */
+async function _muatProgress() {
+  const el = document.getElementById("progressArea");
+  try {
+    const [lessons, chResp] = await Promise.all([
+      ApiLesson.getDaftar(),
+      fetch(`${API}/challenges`).then(r=>r.ok?r.json():[]).catch(()=>[])
+    ]);
+    const challenges = Array.isArray(chResp) ? chResp : [];
+    const sLes = lessons.filter(l=>l.selesai).length;
+    const sCh  = challenges.filter(c=>c.selesai).length;
+    const tLes = lessons.length    || 10;
+    const tCh  = challenges.length || 10;
+    const pLes = Math.round(sLes/tLes*100);
+    const pCh  = Math.round(sCh/tCh*100);
+    const xp   = getUser()?.xp ?? 0;
+    const info = hitungXPBar(xp);
+    if (document.getElementById("statLesson").textContent==="—")    document.getElementById("statLesson").textContent=sLes;
+    if (document.getElementById("statChallenge").textContent==="—") document.getElementById("statChallenge").textContent=sCh;
+    el.innerHTML = `
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2);margin-bottom:7px;"><span>📚 Pelajaran</span><span style="font-family:var(--fn-mono);">${sLes} / ${tLes}</span></div>
+        <div class="prog-wrap"><div class="prog-fill prog-blue" style="width:${pLes}%"></div></div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2);margin-bottom:7px;"><span>⚡ Tantangan</span><span style="font-family:var(--fn-mono);">${sCh} / ${tCh}</span></div>
+        <div class="prog-wrap"><div class="prog-fill prog-orange" style="width:${pCh}%"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2);margin-bottom:7px;"><span>🏆 XP ke Level Berikut</span><span style="font-family:var(--fn-mono);">${info.xpDiLevel} / ${info.xpBtnLvl} XP</span></div>
+        <div class="prog-wrap"><div class="prog-fill prog-purple" style="width:${info.persen}%"></div></div>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--txt3);font-size:13px;">Gagal memuat progress.</p>`;
+  }
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", async () => {
+  requireLogin();
+
+  sidebarOpen = window.innerWidth > 768;
+  applySidebar();
+
+  const user = getUser();
+  if (!user) return;
+
+  updateNavUser();
+  _isiProfilDariCache(user);
+
+  try {
+    const profil = await ApiUser.getProfil();
+    if (typeof updateUserStats==="function") updateUserStats(profil.xp, profil.streak_days);
+    updateNavUser();
+    _isiProfilLengkap(profil);
+    await _muatBadge(profil);
+  } catch(e) {
+    tampilToast("Gagal memuat profil: "+e.message,"error");
+  }
+
+  await Promise.all([_muatLeaderboard(), _muatProgress(), _muatKoleksi()]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Masuk — JastCodeLab</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="logo-icon">&lt;/&gt;</div>
+      <span class="logo-text">JastCodeLab</span>
+    </div>
+
+    <h1 class="auth-title">Selamat Datang!</h1>
+    <p class="auth-sub">Masuk untuk melanjutkan belajar Python 🐍</p>
+
+    <!-- Alert (diisi oleh auth.js) -->
+    <div class="auth-alert" id="alertBox"></div>
+
+    <!-- FORM LOGIN — id="loginForm" wajib ada -->
+    <form id="loginForm" novalidate>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <input
+          class="form-input"
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Masukkan username kamu"
+          autocomplete="username"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input
+          class="form-input"
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Masukkan password"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <!-- id="submitBtn" wajib ada agar auth.js bisa kontrol loading state -->
+      <button
+        type="submit"
+        id="submitBtn"
+        class="btn btn-primary btn-full"
+      >
+        Masuk
+      </button>
+
+    </form>
+
+    <div class="auth-footer">
+      Belum punya akun? <a href="register.html">Daftar sekarang</a>
+    </div>
+    <div class="auth-footer" style="margin-top: 8px;">
+      <a href="index.html" style="color: var(--txt3);">← Kembali ke beranda</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Urutan script WAJIB: api.js → auth.js → main.js -->
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

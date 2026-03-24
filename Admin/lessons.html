@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kelola Pelajaran — JCL Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+<div class="admin-layout">
+
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sb-brand"><div class="brand-icon">&lt;/&gt;</div><div><div class="brand-name">JCL Admin</div><div class="brand-sub">Control Panel</div></div></div>
+    <nav class="sb-nav">
+      <a href="dashboard.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="lessons.html" class="sb-link active"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Pelajaran</a>
+      <a href="challenges.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Tantangan</a>
+      <a href="users.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Pengguna</a>
+      <a href="posts.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Komunitas</a>
+      <div class="sb-divider"></div>
+      <a href="../Frontend/index.html" class="sb-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Lihat Site</a>
+      <button class="sb-link sb-logout" onclick="adminLogout()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Keluar</button>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="topbar-title">Kelola Pelajaran</div>
+      <div class="topbar-admin" id="adminName">Admin</div>
+    </header>
+
+    <div class="admin-content">
+      <div class="toolbar">
+        <div class="section-title" style="margin:0;flex:1;">Daftar Pelajaran</div>
+        <button class="btn btn-primary" onclick="bukaModalBuat()">+ Tambah Lesson</button>
+      </div>
+
+      <div class="table-wrap" id="tableWrap">
+        <table class="admin-table">
+          <thead><tr><th>#</th><th>Judul</th><th>Urutan</th><th>XP</th><th>Status</th><th>Dibuat</th><th>Aksi</th></tr></thead>
+          <tbody id="lessonBody">
+            <tr><td colspan="7"><div class="skel" style="height:40px;margin:10px;"></div></td></tr>
+            <tr><td colspan="7"><div class="skel" style="height:40px;margin:10px;"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal Buat/Edit -->
+<div class="modal-overlay" id="modalLesson">
+  <div class="modal">
+    <div class="modal-title" id="modalLessonTitle">Tambah Lesson</div>
+    <input type="hidden" id="lessonId"/>
+    <div class="form-group">
+      <label class="form-label">Judul *</label>
+      <input class="form-input" id="fJudul" placeholder="Judul lesson"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi *</label>
+      <input class="form-input" id="fDeskripsi" placeholder="Deskripsi singkat"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Konten *</label>
+      <textarea class="form-textarea" id="fKonten" rows="5" placeholder="Isi materi pelajaran..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kode Contoh</label>
+      <textarea class="form-textarea" id="fKode" rows="4" style="font-family:var(--fn-mono);" placeholder="print('Hello World')"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Output Contoh</label>
+      <input class="form-input" id="fOutput" placeholder="Hello World"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Urutan</label>
+        <input class="form-input" id="fUrutan" type="number" min="1" value="1"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">XP Reward</label>
+        <input class="form-input" id="fXP" type="number" min="0" value="20"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-check">
+        <input type="checkbox" id="fDipublikasi" checked/>
+        Dipublikasikan (terlihat oleh user)
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning" onclick="tutupModal('modalLesson')">Batal</button>
+      <button class="btn btn-primary" id="btnSimpanLesson" onclick="simpanLesson()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal-overlay" id="modalHapus">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">Hapus Lesson</div>
+    <p style="color:var(--txt2);font-size:14px;">Yakin ingin menghapus lesson <strong id="hapusNama"></strong>? Aksi ini tidak bisa dibatalkan.</p>
+    <input type="hidden" id="hapusId"/>
+    <div class="modal-footer">
+      <button class="btn btn-warning" onclick="tutupModal('modalHapus')">Batal</button>
+      <button class="btn btn-danger" onclick="konfirmasiHapus()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+<script src="admin.js"></script>
+<script>
+let allLessons = [];
+
+document.addEventListener("DOMContentLoaded", async () => {
+  requireAdmin();
+  document.getElementById("adminName").textContent = getAdminName();
+  await muatLessons();
+});
+
+async function muatLessons() {
+  try {
+    allLessons = await adminFetch("/admin/lessons");
+    renderTabel(allLessons);
+  } catch (e) {
+    tampilToast("Gagal memuat lesson: " + e.message, "error");
+  }
+}
+
+function renderTabel(list) {
+  const tbody = document.getElementById("lessonBody");
+  if (!list || list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📚</div>Belum ada lesson. Tambahkan yang pertama!</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map((l, i) => `
+    <tr>
+      <td style="color:var(--txt3);font-family:var(--fn-mono);font-size:11px;">${i+1}</td>
+      <td>
+        <div style="font-weight:600;">${escHtml(l.judul)}</div>
+      </td>
+      <td><span class="pill pill-blue">#${l.urutan}</span></td>
+      <td><span class="pill pill-orange">+${l.xp_reward} XP</span></td>
+      <td>${l.dipublikasi ? '<span class="pill pill-green">Aktif</span>' : '<span class="pill pill-gray">Draft</span>'}</td>
+      <td style="color:var(--txt3);font-size:12px;">${formatTanggal(l.created_at)}</td>
+      <td>
+        <div class="td-actions">
+          <button class="btn btn-success btn-sm" onclick="bukaModalEdit(${l.id})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="bukaModalHapus(${l.id},'${escHtml(l.judul)}')">Hapus</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function bukaModalBuat() {
+  document.getElementById("modalLessonTitle").textContent = "Tambah Lesson";
+  document.getElementById("lessonId").value = "";
+  document.getElementById("fJudul").value = "";
+  document.getElementById("fDeskripsi").value = "";
+  document.getElementById("fKonten").value = "";
+  document.getElementById("fKode").value = "";
+  document.getElementById("fOutput").value = "";
+  document.getElementById("fUrutan").value = allLessons.length + 1;
+  document.getElementById("fXP").value = 20;
+  document.getElementById("fDipublikasi").checked = true;
+  bukaModal("modalLesson");
+}
+
+function bukaModalEdit(id) {
+  const l = allLessons.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById("modalLessonTitle").textContent = "Edit Lesson";
+  document.getElementById("lessonId").value = l.id;
+  document.getElementById("fJudul").value = l.judul;
+  document.getElementById("fDeskripsi").value = l.deskripsi || "";
+  document.getElementById("fKonten").value = l.konten || "";
+  document.getElementById("fKode").value = l.kode_contoh || "";
+  document.getElementById("fOutput").value = l.output_contoh || "";
+  document.getElementById("fUrutan").value = l.urutan;
+  document.getElementById("fXP").value = l.xp_reward;
+  document.getElementById("fDipublikasi").checked = !!l.dipublikasi;
+  bukaModal("modalLesson");
+}
+
+async function simpanLesson() {
+  const id = document.getElementById("lessonId").value;
+  const btn = document.getElementById("btnSimpanLesson");
+  const payload = {
+    judul:         document.getElementById("fJudul").value.trim(),
+    deskripsi:     document.getElementById("fDeskripsi").value.trim(),
+    konten:        document.getElementById("fKonten").value.trim(),
+    kode_contoh:   document.getElementById("fKode").value,
+    output_contoh: document.getElementById("fOutput").value,
+    urutan:        parseInt(document.getElementById("fUrutan").value) || 1,
+    xp_reward:     parseInt(document.getElementById("fXP").value) || 20,
+    dipublikasi:   document.getElementById("fDipublikasi").checked,
+  };
+
+  if (!payload.judul || !payload.deskripsi || !payload.konten) {
+    tampilToast("Judul, deskripsi, dan konten wajib diisi.", "error");
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = "Menyimpan...";
+  try {
+    if (id) {
+      await adminFetch(`/admin/lessons/${id}`, "PUT", payload);
+      tampilToast("Lesson berhasil diperbarui!", "success");
+    } else {
+      await adminFetch("/admin/lessons", "POST", payload);
+      tampilToast("Lesson berhasil dibuat!", "success");
+    }
+    tutupModal("modalLesson");
+    await muatLessons();
+  } catch (e) {
+    tampilToast(e.message, "error");
+  }
+  btn.disabled = false; btn.textContent = "Simpan";
+}
+
+function bukaModalHapus(id, nama) {
+  document.getElementById("hapusId").value = id;
+  document.getElementById("hapusNama").textContent = `"${nama}"`;
+  bukaModal("modalHapus");
+}
+
+async function konfirmasiHapus() {
+  const id = document.getElementById("hapusId").value;
+  try {
+    await adminFetch(`/admin/lessons/${id}`, "DELETE");
+    tampilToast("Lesson berhasil dihapus.", "success");
+    tutupModal("modalHapus");
+    await muatLessons();
+  } catch (e) {
+    tampilToast(e.message, "error");
+  }
+}
+</script>
+</body>
+</html>

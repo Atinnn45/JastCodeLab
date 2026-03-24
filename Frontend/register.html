@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daftar — JastCodeLab</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="logo-icon">&lt;/&gt;</div>
+      <span class="logo-text">JastCodeLab</span>
+    </div>
+
+    <h1 class="auth-title">Buat Akun Baru</h1>
+    <p class="auth-sub">Mulai perjalanan Python-mu hari ini! 🚀</p>
+
+    <!-- Alert (diisi oleh auth.js) -->
+    <div class="auth-alert" id="alertBox"></div>
+
+    <!-- FORM REGISTER — id="registerForm" wajib ada -->
+    <form id="registerForm" novalidate>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <input
+          class="form-input"
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Contoh: budi_dev"
+          maxlength="30"
+          required
+        />
+        <small style="font-size: 11px; color: var(--txt3); margin-top: 4px; display: block;">
+          Hanya huruf, angka, dan underscore. Min. 3 karakter.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input
+          class="form-input"
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Contoh: budi@email.com"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input
+          class="form-input"
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Minimal 6 karakter"
+          autocomplete="new-password"
+          required
+        />
+      </div>
+
+      <!-- id="konfirmasi" dibaca oleh auth.js untuk validasi -->
+      <div class="form-group">
+        <label class="form-label" for="konfirmasi">Konfirmasi Password</label>
+        <input
+          class="form-input"
+          type="password"
+          id="konfirmasi"
+          name="konfirmasi"
+          placeholder="Ulangi password"
+          autocomplete="new-password"
+          required
+        />
+      </div>
+
+      <!-- id="submitBtn" wajib ada -->
+      <button
+        type="submit"
+        id="submitBtn"
+        class="btn btn-primary btn-full"
+      >
+        Daftar Sekarang
+      </button>
+
+    </form>
+
+    <div class="auth-footer">
+      Sudah punya akun? <a href="login.html">Masuk di sini</a>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

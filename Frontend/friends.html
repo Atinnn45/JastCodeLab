@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Teman — JastCodeLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+:root{--bg:#080c14;--bg2:#0d1220;--bg3:#111827;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--blue:#4f8ef7;--green:#34d399;--orange:#fb923c;--purple:#a78bfa;--red:#f87171;--yellow:#fbbf24;--txt:#e8edf8;--txt2:#8b95b0;--txt3:#4a5472;--fn-display:'Syne',sans-serif;--fn-mono:'JetBrains Mono',monospace;--fn-body:'DM Sans',sans-serif;--t:.18s ease;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:var(--fn-body);font-size:15px;line-height:1.6;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}ul{list-style:none;}button{font-family:var(--fn-body);}
+
+/* ══════════════════════════════════════════
+   SIDEBAR — identik dengan index.html
+══════════════════════════════════════════ */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none;backdrop-filter:blur(2px);}
+.sidebar-overlay.show{display:block;}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.sidebar.hidden{transform:translateX(-100%);}
+.main-area{margin-left:220px;transition:margin .28s cubic-bezier(.4,0,.2,1);min-height:100vh;}
+.main-area.full{margin-left:0;}
+
+.sb-logo{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--fn-mono);font-size:11px;font-weight:700;color:#fff;}
+.logo-text{font-family:var(--fn-display);font-size:15px;font-weight:800;color:var(--txt);letter-spacing:-.3px;}
+.close-btn{background:none;border:none;cursor:pointer;color:var(--txt3);padding:4px;border-radius:5px;display:none;}
+.close-btn:hover{color:var(--txt);background:rgba(255,255,255,.07);}
+
+.sb-nav{flex:1;padding:10px;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;color:var(--txt2);transition:all .15s;text-decoration:none;margin-bottom:2px;border:1px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--txt);}
+.nav-item.active{background:rgba(79,142,247,.12);color:var(--blue);border-color:rgba(79,142,247,.25);}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;}
+.nav-divider{height:1px;background:var(--border);margin:6px 4px;}
+
+.sb-bottom{padding:10px;border-top:1px solid var(--border);flex-shrink:0;}
+.streak-wrap{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);margin-bottom:6px;}
+.streak-days{font-family:var(--fn-display);font-size:14px;font-weight:800;color:var(--orange);line-height:1;}
+.streak-lbl{font-size:10px;color:var(--txt3);font-family:var(--fn-mono);}
+.sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;margin-bottom:6px;}
+.sb-user:hover{background:rgba(255,255,255,.05);}
+.avatar-sm{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.sb-username{font-size:13px;font-weight:500;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btn-danger-sm{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%;transition:all .15s;}
+.btn-danger-sm:hover{background:rgba(248,113,113,.22);}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;height:54px;background:rgba(8,12,20,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100;}
+.topbar-title{font-size:14px;color:var(--txt2);flex:1;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.xp-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2);}
+.coins-badge{font-family:var(--fn-mono);font-size:11px;padding:4px 12px;border-radius:100px;background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+.menu-toggle{background:none;border:none;cursor:pointer;color:var(--txt2);padding:6px;border-radius:7px;display:flex;align-items:center;transition:all var(--t);}
+.menu-toggle:hover{background:rgba(255,255,255,.07);color:var(--txt);}
+
+/* ── PAGE ── */
+.page{padding:24px;}
+.page-header{margin-bottom:24px;}
+.page-title{font-family:var(--fn-display);font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--txt2);}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:0;}
+.tab-btn{background:transparent;border:none;border-bottom:2px solid transparent;color:var(--txt3);font-size:13px;padding:8px 16px;cursor:pointer;font-family:var(--fn-body);font-weight:500;transition:all .15s;display:flex;align-items:center;gap:6px;margin-bottom:-1px;}
+.tab-btn:hover{color:var(--txt);}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-badge{background:var(--red);color:#fff;border-radius:100px;font-size:10px;padding:1px 6px;font-family:var(--fn-mono);}
+
+/* ── SEARCH ── */
+.search-wrap{position:relative;margin-bottom:20px;}
+.search-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--txt);font-family:var(--fn-mono);font-size:13px;padding:11px 16px 11px 40px;outline:none;transition:border-color .15s;}
+.search-input:focus{border-color:rgba(79,142,247,.4);}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--txt3);pointer-events:none;}
+.search-hint{font-size:11px;color:var(--txt3);margin-top:6px;font-family:var(--fn-mono);}
+
+/* ── CARDS ── */
+.section-card{background:#0d1220;border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
+.card-title{font-family:var(--fn-display);font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.card-title-left{display:flex;align-items:center;gap:7px;}
+
+/* ── USER ROW ── */
+.user-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;transition:background .15s;margin-bottom:4px;}
+.user-row:hover{background:rgba(255,255,255,.03);}
+.user-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fn-display);font-size:16px;font-weight:800;color:#fff;flex-shrink:0;cursor:pointer;}
+.user-info{flex:1;min-width:0;}
+.user-name{font-size:14px;font-weight:600;cursor:pointer;}
+.user-name:hover{color:var(--blue);}
+.user-meta{font-family:var(--fn-mono);font-size:11px;color:var(--txt3);margin-top:2px;}
+.user-title-tag{font-family:var(--fn-mono);font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(167,139,250,.1);color:var(--purple);border:1px solid rgba(167,139,250,.2);margin-left:4px;}
+.user-actions{display:flex;gap:6px;flex-shrink:0;}
+.lb-rank-num{font-family:var(--fn-mono);font-size:13px;font-weight:700;width:30px;flex-shrink:0;text-align:center;}
+
+/* ── BUTTONS ── */
+.btn-add{background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3);border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn-add:hover{background:rgba(79,142,247,.25);}
+.btn-accept{background:rgba(52,211,153,.15);color:var(--green);border:1px solid rgba(52,211,153,.3);border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-accept:hover{background:rgba(52,211,153,.25);}
+.btn-reject{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.25);border-radius:7px;padding:6px 12px;font-size:12px;cursor:pointer;transition:all .15s;}
+.btn-reject:hover{background:rgba(248,113,113,.2);}
+.btn-unfriend{background:transparent;color:var(--txt3);border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-size:11px;cursor:pointer;transition:all .15s;}
+.btn-unfriend:hover{color:var(--red);border-color:rgba(248,113,113,.3);}
+.btn-pending{background:rgba(251,191,36,.08);color:var(--yellow);border:1px solid rgba(251,191,36,.2);border-radius:7px;padding:6px 14px;font-size:12px;cursor:default;white-space:nowrap;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px 20px;color:var(--txt3);}
+.empty-icon{font-size:2.5rem;margin-bottom:10px;}
+.empty p{font-size:13px;}
+
+/* ── SKELETON ── */
+.skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
+@keyframes shimmer{to{background-position:-200% 0;}}
+
+#toastContainer{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+@media(max-width:768px){
+  .main-area{margin-left:0!important;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.show{transform:translateX(0);}
+  .close-btn{display:flex!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="tutupSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR — identik dengan index.html ═══════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html" class="sb-logo-link">
+      <div class="logo-icon">&lt;/&gt;</div>
+      <span class="logo-text">JCL</span>
+    </a>
+    <button class="close-btn" id="closeSidebarBtn" onclick="tutupSidebar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <ul class="sb-nav">
+    <!-- Navigasi Utama -->
+    <li><a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Beranda
+    </a></li>
+    <li><a href="learn.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      Belajar
+    </a></li>
+    <li><a href="daily.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      Daily Challenge
+    </a></li>
+    <li><a href="runner.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      Kode Runner
+    </a></li>
+    <li><a href="challenges.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Tantangan
+    </a></li>
+    <li><a href="community.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Komunitas
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Sosial & Toko -->
+    <li><a href="friends.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Teman
+    </a></li>
+    <li><a href="shop.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Shop
+    </a></li>
+
+    <div class="nav-divider"></div>
+
+    <!-- Akun -->
+    <li id="navLoginLi"><a href="login.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Masuk
+    </a></li>
+    <li id="navProfilLi" style="display:none;"><a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profil Saya
+    </a></li>
+  </ul>
+
+  <div class="sb-bottom">
+    <div class="streak-wrap" id="streakWrap" style="display:none;">
+      <span style="font-size:18px;">🔥</span>
+      <div>
+        <div class="streak-days" id="navStreak">0 Hari</div>
+        <div class="streak-lbl">Streak Aktif</div>
+      </div>
+    </div>
+    <div class="sb-user" onclick="window.location.href='profile.html'">
+      <div class="avatar-sm" id="navAvatar">?</div>
+      <span class="sb-username" id="navUsername">Guest</span>
+    </div>
+    <button class="btn-danger-sm" id="navLogoutBtn" style="display:none;" onclick="logout()">Keluar</button>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main-area" id="mainArea">
+  <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="topbar-title">👥 Teman</div>
+    <div class="topbar-right">
+      <span class="coins-badge" id="navCoins" style="display:none;">🪙 0</span>
+      <span class="xp-badge" id="navXP">⚡ 0 XP</span>
+      <div class="avatar-sm" id="topbarAvatar" style="cursor:pointer;width:32px;height:32px;font-size:13px;" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </header>
+
+  <div class="page">
+    <div class="page-header">
+      <div class="page-title">👥 Teman</div>
+      <div class="page-sub">Cari teman, lihat leaderboard khusus, dan kelola pertemanan</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="teman"      onclick="gantiTab(this)">🤝 Teman Saya</button>
+      <button class="tab-btn"        data-tab="cari"       onclick="gantiTab(this)">🔍 Cari Teman</button>
+      <button class="tab-btn"        data-tab="permintaan" onclick="gantiTab(this)">
+        📬 Permintaan
+        <span class="tab-badge" id="badgePermintaan" style="display:none;">0</span>
+      </button>
+      <button class="tab-btn"        data-tab="leaderboard" onclick="gantiTab(this)">🏆 Leaderboard</button>
+    </div>
+
+    <!-- TAB: TEMAN SAYA -->
+    <div id="tabTeman">
+      <div class="section-card">
+        <div class="card-title">
+          <div class="card-title-left">🤝 Daftar Teman <span id="jumlahTeman" style="font-size:12px;color:var(--txt3);font-family:var(--fn-mono);font-weight:400;"></span></div>
+        </div>
+        <div id="listTeman">
+          <div class="skel" style="height:60px;margin-bottom:8px;border-radius:10px;"></div>
+          <div class="skel" style="height:60px;border-radius:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CARI TEMAN -->
+    <div id="tabCari" style="display:none;">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="inputCari" placeholder="Ketik username untuk mencari..."
+          oninput="handleCari(this.value)" autocomplete="off"/>
+        <div class="search-hint">Minimal 2 karakter</div>
+      </div>
+      <div id="hasilCari"></div>
+    </div>
+
+    <!-- TAB: PERMINTAAN -->
+    <div id="tabPermintaan" style="display:none;">
+      <div class="section-card">
+        <div class="card-title"><div class="card-title-left">📬 Permintaan Masuk</div></div>
+        <div id="listPermintaan">
+          <div class="skel" style="height:60px;border-radius:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: LEADERBOARD -->
+    <div id="tabLeaderboard" style="display:none;">
+      <div class="section-card">
+        <div class="card-title">
+          <div class="card-title-left">🏆 Leaderboard Teman</div>
+          <span style="font-size:11px;color:var(--txt3);font-family:var(--fn-mono);">Kamu + semua teman</span>
+        </div>
+        <div id="listLeaderboard">
+          <div class="skel" style="height:60px;margin-bottom:8px;border-radius:10px;"></div>
+          <div class="skel" style="height:60px;border-radius:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main-area -->
+
+<div id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+
+const API = "http://127.0.0.1:8000";
+let tabAktif  = "teman";
+let cariTimer = null;
+
+/* ════════════════════════════════════════
+   SIDEBAR — identik dengan index.html
+════════════════════════════════════════ */
+let sidebarOpen = true;
+
+function toggleSidebar() {
+  if (window.innerWidth > 768) return;
+  sidebarOpen = !sidebarOpen;
+  applySidebar();
+}
+
+function tutupSidebar() {
+  if (window.innerWidth > 768) return;
+  sidebarOpen = false;
+  applySidebar();
+}
+
+function applySidebar() {
+  const sb  = document.getElementById("sidebar");
+  const ma  = document.getElementById("mainArea");
+  const ov  = document.getElementById("overlay");
+  const mob = window.innerWidth <= 768;
+
+  if (!mob) {
+    sb.classList.remove("hidden"); sb.classList.add("show");
+    ov.classList.remove("show");
+    ma.classList.remove("full");
+    ma.style.marginLeft = "220px";
+    document.getElementById("closeSidebarBtn").style.display = "none";
+  } else {
+    document.getElementById("closeSidebarBtn").style.display = "flex";
+    if (sidebarOpen) {
+      sb.classList.remove("hidden"); sb.classList.add("show");
+      ov.classList.add("show"); ma.classList.add("full");
+    } else {
+      sb.classList.add("hidden"); sb.classList.remove("show");
+      ov.classList.remove("show"); ma.classList.remove("full");
+    }
+  }
+}
+
+window.addEventListener("resize", () => {
+  sidebarOpen = window.innerWidth > 768;
+  applySidebar();
+});
+
+/* ════════════════════════════════════════
+   UPDATE NAV USER — identik dengan index.html
+════════════════════════════════════════ */
+function updateNavUser() {
+  const user     = getUser();
+  const loggedIn = sudahLogin();
+
+  document.getElementById("navLoginLi").style.display   = loggedIn ? "none" : "";
+  document.getElementById("navProfilLi").style.display  = loggedIn ? "" : "none";
+  document.getElementById("navLogoutBtn").style.display = loggedIn ? "" : "none";
+
+  if (!user) return;
+
+  document.getElementById("navUsername").textContent = user.username;
+  document.getElementById("navStreak").textContent   = `${user.streak_days ?? 0} Hari`;
+  document.getElementById("navXP").textContent       = `⚡ ${user.xp ?? 0} XP`;
+
+  const navCoins = document.getElementById("navCoins");
+  if (navCoins) {
+    navCoins.textContent   = `🪙 ${user.coins ?? 0}`;
+    navCoins.style.display = loggedIn ? "" : "none";
+  }
+
+  const streakWrap = document.getElementById("streakWrap");
+  if (streakWrap) streakWrap.style.display = (user.streak_days > 0) ? "flex" : "none";
+
+  const inisial = user.username.charAt(0).toUpperCase();
+  document.getElementById("navAvatar").textContent    = inisial;
+  document.getElementById("topbarAvatar").textContent = inisial;
+}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+function tampilToast(pesan, tipe="info", dur=3500) {
+  const c  = document.getElementById("toastContainer");
+  const el = document.createElement("div");
+  const w  = tipe==="success"?"#34d399":tipe==="error"?"#f87171":tipe==="warning"?"#fb923c":"#4f8ef7";
+  el.style.cssText = `background:#111827;border:1px solid ${w}33;border-left:3px solid ${w};color:${w};padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.4);animation:fadeIn .2s ease;`;
+  el.textContent = pesan; c.appendChild(el);
+  setTimeout(() => { el.style.opacity="0"; el.style.transition="opacity .3s"; setTimeout(()=>el.remove(),300); }, dur);
+}
+
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+function escHtml(s) { return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function warnaDariNama(str) {
+  const p=["linear-gradient(135deg,#6366f1,#8b5cf6)","linear-gradient(135deg,#10b981,#059669)","linear-gradient(135deg,#f59e0b,#d97706)","linear-gradient(135deg,#3b82f6,#2563eb)","linear-gradient(135deg,#ec4899,#db2777)"];
+  let h=0; for(const c of str) h=(h*31+c.charCodeAt(0))%p.length; return p[h];
+}
+function authHeaders() {
+  const t = localStorage.getItem("jcl_token");
+  return t ? {"Authorization":`Bearer ${t}`,"Content-Type":"application/json"} : {"Content-Type":"application/json"};
+}
+function hitungLevel(xp) {
+  const t=[0,100,250,450,700,1000,1350,1750,2200,2700,3250];
+  let l=1; for(let i=0;i<t.length;i++){if(xp>=t[i])l=i+1;else break;} return l;
+}
+
+/* ════════════════════════════════════════
+   TABS
+════════════════════════════════════════ */
+function gantiTab(btn) {
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  tabAktif = btn.dataset.tab;
+  document.getElementById("tabTeman").style.display        = tabAktif==="teman"       ? "" : "none";
+  document.getElementById("tabCari").style.display         = tabAktif==="cari"        ? "" : "none";
+  document.getElementById("tabPermintaan").style.display   = tabAktif==="permintaan"  ? "" : "none";
+  document.getElementById("tabLeaderboard").style.display  = tabAktif==="leaderboard" ? "" : "none";
+  if (tabAktif==="teman")        muatTeman();
+  if (tabAktif==="permintaan")   muatPermintaan();
+  if (tabAktif==="leaderboard")  muatLeaderboard();
+}
+
+/* ════════════════════════════════════════
+   MUAT TEMAN
+════════════════════════════════════════ */
+async function muatTeman() {
+  const el = document.getElementById("listTeman");
+  el.innerHTML = `<div class="skel" style="height:60px;border-radius:10px;"></div>`;
+  try {
+    const data  = await (await fetch(`${API}/friends/saya`, {headers:authHeaders()})).json();
+    const teman = data.teman || [];
+    document.getElementById("jumlahTeman").textContent = `(${teman.length})`;
+    if (!teman.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><p>Belum punya teman. Cari teman di tab Cari Teman!</p></div>`;
+      return;
+    }
+    el.innerHTML = teman.map(t => `
+      <div class="user-row" id="row-teman-${t.id}">
+        <div class="user-av" style="background:${warnaDariNama(t.username)};"
+             onclick="window.location.href='user.html?u=${encodeURIComponent(t.username)}'">
+          ${t.username[0].toUpperCase()}
+        </div>
+        <div class="user-info">
+          <div class="user-name" onclick="window.location.href='user.html?u=${encodeURIComponent(t.username)}'">
+            ${escHtml(t.username)}
+            ${t.active_title ? `<span class="user-title-tag">${escHtml(t.active_title)}</span>` : ""}
+          </div>
+          <div class="user-meta">⚡ ${t.xp} XP · Lv.${hitungLevel(t.xp)} · 🔥 ${t.streak_days} hari · ${t.ch_selesai} tantangan selesai</div>
+        </div>
+        <div class="user-actions">
+          <button class="btn-unfriend" onclick="hapusTeman(${t.id},'${escHtml(t.username)}')">Hapus</button>
+        </div>
+      </div>`).join("");
+  } catch(e) {
+    el.innerHTML = `<div class="empty"><p>Gagal memuat teman: ${e.message}</p></div>`;
+  }
+}
+
+/* ════════════════════════════════════════
+   CARI TEMAN
+════════════════════════════════════════ */
+function handleCari(val) {
+  clearTimeout(cariTimer);
+  const el = document.getElementById("hasilCari");
+  if (val.trim().length < 2) { el.innerHTML = ""; return; }
+  el.innerHTML = `<div class="skel" style="height:60px;border-radius:10px;"></div>`;
+  cariTimer = setTimeout(() => cariUser(val.trim()), 400);
+}
+
+async function cariUser(q) {
+  const el = document.getElementById("hasilCari");
+  try {
+    const data = await (await fetch(`${API}/cari-user?q=${encodeURIComponent(q)}`, {headers:authHeaders()})).json();
+    if (!data.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><p>User "${escHtml(q)}" tidak ditemukan.</p></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="section-card">` +
+      data.map(u => `
+        <div class="user-row" id="row-cari-${u.id}">
+          <div class="user-av" style="background:${warnaDariNama(u.username)};">${u.username[0].toUpperCase()}</div>
+          <div class="user-info">
+            <div class="user-name">${escHtml(u.username)}${u.active_title?`<span class="user-title-tag">${escHtml(u.active_title)}</span>`:""}</div>
+            <div class="user-meta">⚡ ${u.xp} XP · Lv.${hitungLevel(u.xp)} · 🔥 ${u.streak_days} hari</div>
+          </div>
+          <div class="user-actions" id="aksi-cari-${u.id}">${renderAksiCari(u)}</div>
+        </div>`).join("") +
+      `</div>`;
+  } catch(e) {
+    el.innerHTML = `<div class="empty"><p>Gagal mencari: ${e.message}</p></div>`;
+  }
+}
+
+function renderAksiCari(u) {
+  if (u.status_teman==="accepted")
+    return `<span style="color:var(--green);font-size:12px;font-family:var(--fn-mono);">✓ Teman</span>`;
+  if (u.status_teman==="pending" && u.arah==="sent")
+    return `<button class="btn-pending" disabled>⏳ Menunggu</button>`;
+  if (u.status_teman==="pending" && u.arah==="received")
+    return `<button class="btn-accept" onclick="terimaFromCari(${u.id})">Terima</button>
+            <button class="btn-reject" onclick="tolakFromCari(${u.id})">Tolak</button>`;
+  return `<button class="btn-add" onclick="tambahFromCari(${u.id})">+ Tambah</button>`;
+}
+
+/* ════════════════════════════════════════
+   MUAT PERMINTAAN
+════════════════════════════════════════ */
+async function muatPermintaan() {
+  const el = document.getElementById("listPermintaan");
+  el.innerHTML = `<div class="skel" style="height:60px;border-radius:10px;"></div>`;
+  try {
+    const data = await (await fetch(`${API}/friends/permintaan`, {headers:authHeaders()})).json();
+    const list = data.permintaan || [];
+    const badge = document.getElementById("badgePermintaan");
+    if (list.length > 0) { badge.textContent=list.length; badge.style.display="inline"; }
+    else badge.style.display = "none";
+    if (!list.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>Tidak ada permintaan masuk saat ini.</p></div>`;
+      return;
+    }
+    el.innerHTML = list.map(r => `
+      <div class="user-row" id="row-req-${r.id}">
+        <div class="user-av" style="background:${warnaDariNama(r.username)};">${r.username[0].toUpperCase()}</div>
+        <div class="user-info">
+          <div class="user-name">${escHtml(r.username)}${r.active_title?`<span class="user-title-tag">${escHtml(r.active_title)}</span>`:""}</div>
+          <div class="user-meta">⚡ ${r.xp} XP · Lv.${hitungLevel(r.xp)}</div>
+        </div>
+        <div class="user-actions">
+          <button class="btn-accept" onclick="terima(${r.id})">✓ Terima</button>
+          <button class="btn-reject"  onclick="tolak(${r.id})">✕</button>
+        </div>
+      </div>`).join("");
+  } catch(e) {
+    el.innerHTML = `<div class="empty"><p>Gagal memuat permintaan: ${e.message}</p></div>`;
+  }
+}
+
+/* ════════════════════════════════════════
+   MUAT LEADERBOARD
+════════════════════════════════════════ */
+async function muatLeaderboard() {
+  const el = document.getElementById("listLeaderboard");
+  el.innerHTML = `<div class="skel" style="height:60px;margin-bottom:8px;border-radius:10px;"></div><div class="skel" style="height:60px;border-radius:10px;"></div>`;
+  try {
+    const data = await (await fetch(`${API}/friends/leaderboard`, {headers:authHeaders()})).json();
+    if (!data.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">🏆</div><p>Tambahkan teman dulu untuk melihat leaderboard!</p></div>`;
+      return;
+    }
+    el.innerHTML = data.map((u, i) => {
+      const ikon  = i===0?"🥇":i===1?"🥈":i===2?"🥉":`#${i+1}`;
+      const warna = i===0?"#fbbf24":i===1?"#8b95b0":i===2?"#fb923c":"#4a5472";
+      return `
+        <div class="user-row" style="${u.is_me?"background:rgba(79,142,247,.08);border-radius:10px;border:1px solid rgba(79,142,247,.2);":""}">
+          <span class="lb-rank-num" style="color:${warna};">${ikon}</span>
+          <div class="user-av" style="background:${warnaDariNama(u.username)};">${u.username[0].toUpperCase()}</div>
+          <div class="user-info">
+            <div class="user-name">
+              ${escHtml(u.username)}
+              ${u.is_me?'<span style="color:var(--blue);font-size:11px;"> (kamu)</span>':""}
+              ${u.active_title?`<span class="user-title-tag">${escHtml(u.active_title)}</span>`:""}
+            </div>
+            <div class="user-meta">⚡ ${u.xp} XP · Lv.${hitungLevel(u.xp)} · 🔥 ${u.streak_days}h · ${u.ch_selesai} tantangan</div>
+          </div>
+          <div style="font-family:var(--fn-mono);font-size:14px;font-weight:700;color:var(--blue);">${u.xp} XP</div>
+        </div>`;
+    }).join("");
+  } catch(e) {
+    el.innerHTML = `<div class="empty"><p>Gagal memuat leaderboard: ${e.message}</p></div>`;
+  }
+}
+
+/* ════════════════════════════════════════
+   AKSI
+════════════════════════════════════════ */
+async function tambahFromCari(id) {
+  try {
+    const res  = await fetch(`${API}/friends/tambah/${id}`,{method:"POST",headers:authHeaders()});
+    const data = await res.json();
+    if (!res.ok) { tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast(data.pesan,"success");
+    const aksiEl = document.getElementById(`aksi-cari-${id}`);
+    if (aksiEl) aksiEl.innerHTML = data.status==="accepted"
+      ? `<span style="color:var(--green);font-size:12px;font-family:var(--fn-mono);">✓ Teman</span>`
+      : `<button class="btn-pending" disabled>⏳ Menunggu</button>`;
+  } catch(e) { tampilToast("Gagal terhubung","error"); }
+}
+
+async function terima(requesterId) {
+  try {
+    const res  = await fetch(`${API}/friends/terima/${requesterId}`,{method:"POST",headers:authHeaders()});
+    const data = await res.json();
+    if (!res.ok) { tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("🤝 "+data.pesan,"success");
+    muatPermintaan();
+  } catch(e) { tampilToast("Gagal terhubung","error"); }
+}
+
+async function terimaFromCari(id) {
+  await terima(id);
+  const q = document.getElementById("inputCari").value.trim();
+  if (q.length >= 2) cariUser(q);
+}
+
+async function tolak(requesterId) {
+  try {
+    const res  = await fetch(`${API}/friends/tolak/${requesterId}`,{method:"POST",headers:authHeaders()});
+    const data = await res.json();
+    if (!res.ok) { tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("Permintaan ditolak","info");
+    muatPermintaan();
+  } catch(e) { tampilToast("Gagal terhubung","error"); }
+}
+
+async function tolakFromCari(id) {
+  await tolak(id);
+  const q = document.getElementById("inputCari").value.trim();
+  if (q.length >= 2) cariUser(q);
+}
+
+async function hapusTeman(id, nama) {
+  if (!confirm(`Hapus ${nama} dari daftar teman?`)) return;
+  try {
+    const res  = await fetch(`${API}/friends/hapus/${id}`,{method:"DELETE",headers:authHeaders()});
+    const data = await res.json();
+    if (!res.ok) { tampilToast(data.detail||"Gagal","error"); return; }
+    tampilToast("Teman berhasil dihapus","info");
+    muatTeman();
+  } catch(e) { tampilToast("Gagal terhubung","error"); }
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", async () => {
+  requireLogin();
+
+  sidebarOpen = window.innerWidth > 768;
+  applySidebar();
+  updateNavUser();
+
+  if (sudahLogin()) {
+    try {
+      const profil = await ApiUser.getProfil();
+      if (typeof updateUserStats==="function") updateUserStats(profil.xp, profil.streak_days);
+      updateNavUser();
+    } catch(_) {}
+  }
+
+  await Promise.all([muatTeman(), muatPermintaan()]);
+});
+</script>
+</body>
+</html>
